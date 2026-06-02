@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#7BC0FF" />
+    <title>獺獺 OtterFit | 拍一下，吃得剛剛好</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icon.svg" />
+    <link rel="apple-touch-icon" href="./icon.svg" />
+    <link rel="stylesheet" href="./styles.css?v=49" />
+  </head>
+  <body>
+    <section class="tester-login active" id="testerLogin" aria-label="試用帳號登入">
+      <form class="tester-card" id="testerLoginForm">
+        <div class="brand-row">
+          <div class="brand-mark" aria-hidden="true">
+            <span class="lens"></span>
+            <span class="spark"></span>
+          </div>
+          <div>
+            <p class="eyebrow">Private Beta</p>
+            <h1>獺獺 OtterFit</h1>
+            <p class="subtitle">四人試用版，登入後會從自己的乾淨資料開始。</p>
+          </div>
+        </div>
+        <div class="form-row">
+          <label for="testerAccount">試用帳號</label>
+          <select id="testerAccount">
+            <option value="lynn">Lynn</option>
+            <option value="leia">Leia</option>
+            <option value="andrew">Andrew</option>
+            <option value="sally">Sally</option>
+          </select>
+        </div>
+        <div class="quick-login-grid" aria-label="快速登入">
+          <button type="button" data-quick-login="lynn">Lynn</button>
+          <button type="button" data-quick-login="leia">Leia</button>
+          <button type="button" data-quick-login="andrew">Andrew</button>
+          <button type="button" data-quick-login="sally">Sally</button>
+        </div>
+        <div class="form-row">
+          <label for="testerPassword">密碼</label>
+          <input id="testerPassword" type="password" autocomplete="current-password" placeholder="輸入試用密碼" />
+        </div>
+        <button class="primary-action big-action" type="submit">登入試用</button>
+        <p class="storage-note">Private beta 測試：可直接點名字快速登入。資料目前存在各自手機瀏覽器，正式測試版會改成雲端會員。</p>
+        <p class="form-status" id="testerLoginStatus" hidden></p>
+      </form>
+    </section>
+
+    <section class="onboarding" id="onboarding" aria-label="建立個人檔案">
+      <form class="onboarding-card" id="onboardingForm">
+        <div class="brand-row">
+          <div class="brand-mark" aria-hidden="true">
+            <span class="lens"></span>
+            <span class="spark"></span>
+          </div>
+          <div>
+            <p class="eyebrow">Welcome</p>
+            <h1>獺獺 OtterFit</h1>
+            <p class="subtitle">獺獺陪你吃飯、記錄生活，也慢慢變成喜歡的體態。</p>
+          </div>
+        </div>
+
+        <div class="onboarding-grid">
+          <div class="form-row">
+            <label for="profileName">你的名字</label>
+            <input id="profileName" autocomplete="name" placeholder="例：Lynn" />
+          </div>
+          <div class="form-row">
+            <label for="profilePurpose">使用目的</label>
+            <select id="profilePurpose">
+              <option>瘦身</option>
+              <option>維持肌肉</option>
+              <option>增重</option>
+              <option>旅行飲食管理</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="onboarding-grid four">
+          <div class="form-row">
+            <label for="onboardHeight">身高 cm</label>
+            <input id="onboardHeight" type="number" min="120" max="230" step="1" value="170" />
+          </div>
+          <div class="form-row">
+            <label for="onboardWeight">目前體重 kg</label>
+            <input id="onboardWeight" type="number" min="30" max="250" step="0.1" value="80" />
+          </div>
+          <div class="form-row">
+            <label for="onboardAge">年齡</label>
+            <input id="onboardAge" type="number" min="12" max="100" step="1" value="40" />
+          </div>
+          <div class="form-row">
+            <label for="onboardSex">生理性別</label>
+            <select id="onboardSex">
+              <option value="male">男</option>
+              <option value="female">女</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="onboarding-grid">
+          <div class="form-row">
+            <label for="onboardTargetWeight">目標體重 kg</label>
+            <input id="onboardTargetWeight" type="number" min="30" max="250" step="0.1" value="72" />
+          </div>
+          <div class="form-row">
+            <label for="onboardDeadline">希望達成日期</label>
+            <input id="onboardDeadline" type="date" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label for="allergies">過敏 / 不能吃的食物</label>
+          <textarea id="allergies" rows="3" placeholder="例：蝦、蟹、花生、牛奶、堅果、麩質。拍照或輸入餐點包含這些字，會提醒你。"></textarea>
+        </div>
+
+        <div class="recommend-card">
+          <div>
+            <p class="panel-label">建檔後會自動計算</p>
+            <strong>BMI + 每日熱量</strong>
+            <small>之後每次拍照，會依你的目標與禁忌食物客製化提醒。</small>
+          </div>
+        </div>
+
+        <button class="primary-action big-action" type="submit">開始使用</button>
+        <button class="text-action onboarding-skip" id="quickStart" type="button">先試用拍照測熱量</button>
+      </form>
+    </section>
+
+    <section class="daily-checkin" id="dailyCheckin" aria-label="每日體重打卡">
+      <form class="daily-card" id="dailyCheckinForm">
+        <p class="eyebrow">Daily Check-in</p>
+        <h2>今天先量體重</h2>
+        <p id="dailyGreeting">每天只要 10 秒，獺獺就能幫你調整熱量目標。</p>
+        <div class="form-row two-col">
+          <div>
+            <label for="quickWeight">今日體重 kg</label>
+            <input id="quickWeight" type="number" min="30" max="250" step="0.1" placeholder="例：78.5" />
+          </div>
+        </div>
+        <button class="primary-action big-action" type="submit">完成今日打卡</button>
+        <button class="text-action" id="skipCheckin" type="button">今天先略過</button>
+        <div class="encourage-box" id="encourageBox" hidden></div>
+      </form>
+    </section>
+
+    <section class="result-pop" id="resultPop" aria-label="熱量結果" hidden>
+      <div class="result-pop-card">
+        <figure class="pop-photo-frame" id="popPhotoFrame" hidden>
+          <img id="popMealPhoto" alt="這餐照片" />
+        </figure>
+        <p class="panel-label">這餐大約</p>
+        <strong><span id="popCalories">0</span> kcal</strong>
+        <small id="popFoodLabel">辨識：餐點</small>
+        <small class="api-status" id="popApiStatus" hidden></small>
+        <div class="pop-food-items" id="popFoodItems"></div>
+        <p id="popNextMeal">下一餐建議會顯示在這裡。</p>
+        <div class="action-hints" id="actionHints"></div>
+        <button class="primary-action big-action" id="saveMealFromPop" type="button">沒問題，儲存這餐</button>
+        <label class="secondary-action retake-label" for="mealImage" id="retakePhoto">重新拍照</label>
+        <button class="secondary-action" id="closeResultPop" type="button">知道了</button>
+      </div>
+    </section>
+
+    <section class="camera-modal" id="cameraModal" aria-label="拍照互動" hidden>
+      <div class="camera-card">
+        <div class="camera-viewfinder">
+          <span class="corner tl"></span>
+          <span class="corner tr"></span>
+          <span class="corner bl"></span>
+          <span class="corner br"></span>
+          <div class="scan-line" id="scanLine"></div>
+          <div class="camera-dish">
+            <span>🥗</span>
+            <b>AI 餐盤掃描</b>
+          </div>
+        </div>
+        <div class="scan-progress" id="scanProgress" hidden>
+          <span id="scanProgressBar"></span>
+        </div>
+        <p id="cameraModalText">把餐點放在畫面中央，獺獺會先幫你估算。</p>
+        <div class="camera-actions">
+          <label class="primary-action" for="mealImage" id="realUploadFromModal">上傳照片</label>
+          <button class="secondary-action" id="simulateMealScan" type="button">上傳照片（模擬）</button>
+          <button class="text-action" id="closeCameraModal" type="button">關閉</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="achievement-pop" id="achievementPop" aria-label="成就解鎖" hidden>
+      <div class="achievement-card">
+        <p class="eyebrow">Achievement Unlocked</p>
+        <strong id="achievementTitle">獺獺進化了</strong>
+        <span id="achievementBadge">✨</span>
+        <p id="achievementText">體態控管進度達標，截圖分享你的新狀態。</p>
+        <button class="primary-action" id="closeAchievement" type="button">太好了</button>
+      </div>
+    </section>
+
+    <main class="app-shell">
+      <aside class="dashboard" aria-label="今日總覽">
+        <div class="brand-row">
+          <div class="brand-mark" aria-hidden="true">
+            <span class="lens"></span>
+            <span class="spark"></span>
+          </div>
+          <div>
+            <p class="eyebrow">OtterFit Lifestyle</p>
+            <h1>🦦 獺獺 OtterFit</h1>
+            <p class="subtitle"><span id="userGreeting">水獺飯友</span></p>
+          </div>
+        </div>
+
+        <div class="calorie-ring" aria-label="今日剩餘熱量">
+          <svg viewBox="0 0 160 160" role="img" aria-labelledby="ring-title">
+            <title id="ring-title">今日剩餘熱量</title>
+            <circle class="ring-bg" cx="80" cy="80" r="68"></circle>
+            <circle class="ring-progress" cx="80" cy="80" r="68"></circle>
+          </svg>
+          <div class="ring-copy">
+            <span id="remainingCalories">0</span>
+            <small>kcal 今天還能吃</small>
+          </div>
+        </div>
+
+        <button class="toma-coach" id="tomaCoach" type="button" aria-label="獺獺今日提醒">
+          <span class="toma-face" aria-hidden="true">🦦</span>
+          <span class="otter-stage" id="otterStage">圓滾滾初心獺</span>
+          <b id="tomaBubble">嘿，我是你的水獺飯友。先拍第一餐，我陪你慢慢變強。</b>
+        </button>
+
+        <div class="metric-grid">
+          <article>
+            <i aria-hidden="true">🥗</i>
+            <span id="todayCalories">0</span>
+            <small>已吃熱量</small>
+          </article>
+          <article>
+            <i aria-hidden="true">⚖️</i>
+            <span id="bmiText">-</span>
+            <small>BMI</small>
+          </article>
+          <article>
+            <i aria-hidden="true">🥰</i>
+            <span id="todayProtein">0g</span>
+            <small>蛋白質</small>
+          </article>
+          <article>
+            <i aria-hidden="true">👟</i>
+            <span id="weightProgress">0%</span>
+            <small>生活小散步</small>
+          </article>
+        </div>
+
+        <div class="coach-panel">
+          <div class="panel-title-row">
+            <p class="panel-label">下一餐怎麼吃</p>
+            <span id="riskBadge">待記錄</span>
+          </div>
+          <p id="coachAdvice">先拍第一餐。系統會依照你的 BMI、目標體重、今日已吃內容，直接建議下一餐。</p>
+        </div>
+        <button class="text-action" id="editProfile" type="button">編輯個人檔案</button>
+        <button class="text-action subtle" id="switchTester" type="button">切換試用帳號</button>
+      </aside>
+
+      <section class="workspace">
+        <nav class="tabs" aria-label="功能切換">
+          <button class="tab active" data-tab="scan" type="button">紀錄美食</button>
+          <button class="tab" data-tab="body" type="button">我的身體</button>
+          <button class="tab" data-tab="log" type="button">飯友日記</button>
+          <button class="tab" data-tab="insight" type="button">趨勢</button>
+        </nav>
+
+        <section class="tab-panel active" id="scan" aria-label="拍照測熱量">
+          <div class="hero-strip">
+            <div>
+              <p class="eyebrow">OtterFit Daily</p>
+              <h2>吃得剛好，體態更好</h2>
+              <p class="hero-subtitle">用一張照片記錄每一餐，讓體態管理變成有質感的日常。</p>
+            </div>
+          </div>
+
+          <section class="date-view" aria-label="日期檢視">
+            <div>
+              <p class="panel-label">Today</p>
+              <strong id="activeDateLabel">今天</strong>
+            </div>
+            <div class="date-strip" id="dateStrip"></div>
+          </section>
+
+          <section class="sparkline-card" aria-label="七日熱量趨勢">
+            <div>
+              <p class="panel-label">7 Days Trend</p>
+              <h3>熱量七日波動</h3>
+            </div>
+            <svg id="sparklineChart" viewBox="0 0 320 86" role="img" aria-label="七日熱量趨勢圖"></svg>
+          </section>
+
+          <section class="course-section" aria-label="套餐逐道紀錄">
+            <div class="course-title">
+              <span>🍽️ 本餐美食進度</span>
+              <span id="courseCount">尚未開始</span>
+            </div>
+            <div class="course-timeline" id="courseTimeline">
+              <span class="course-badge">等待上菜...</span>
+            </div>
+          </section>
+
+          <section class="plan-card" id="planCard" hidden>
+            <div class="plan-title">🥑 獺獺飯友的平衡提案</div>
+            <p id="planContent">這餐大享受！點擊這張卡片，獺獺幫你補記 2500 步散步，讓節奏拉回來。</p>
+          </section>
+
+          <section class="daily-balance" aria-label="今日體態總覽">
+            <div class="balance-ring">
+              <span id="scanRemainingCalories">0</span>
+              <small>kcal 可用</small>
+            </div>
+            <div class="balance-metrics">
+              <article>
+                <small>已吃</small>
+                <strong><span id="scanEatenCalories">0</span></strong>
+              </article>
+              <article>
+                <small>已消耗</small>
+                <strong><span id="scanBurnedCalories">0</span></strong>
+              </article>
+              <article class="wide">
+                <div>
+                  <small>步數</small>
+                  <strong><span id="scanSteps">0</span> / <span id="scanStepTarget">6000</span></strong>
+                </div>
+                <div class="step-track"><span id="scanStepBar"></span></div>
+              </article>
+            </div>
+          </section>
+
+          <div class="meal-mode">
+            <label class="mode-btn active" for="mealImage" data-mode="before" id="mealArrived">
+              <span class="mode-icon dish-icon" aria-hidden="true"></span>
+              <b>餐點上菜囉</b>
+            </label>
+            <label class="mode-btn" for="afterMealImage" data-mode="after" id="mealFinished">
+              <span class="mode-icon done-icon" aria-hidden="true"></span>
+              <b>我吃完了</b>
+            </label>
+          </div>
+
+          <div class="scan-layout">
+            <label class="upload-zone" for="mealImage">
+              <input id="mealImage" type="file" accept="image/*" capture="environment" />
+              <img id="previewImage" alt="餐點照片預覽" hidden />
+              <div class="photo-calorie-badge" id="photoCalorieBadge" hidden>
+                <small>這張圖約</small>
+                <strong><span id="photoCalories">0</span> kcal</strong>
+              </div>
+              <span class="upload-icon">＋</span>
+              <strong id="photoPrompt">餐點上桌後，先拍一下</strong>
+              <small>不用先填資料。系統會自動記錄時間、判斷餐別與估算份量。</small>
+            </label>
+
+            <label class="upload-zone after-zone" for="afterMealImage">
+              <input id="afterMealImage" type="file" accept="image/*" capture="environment" />
+              <img id="afterPreviewImage" alt="吃後照片預覽" hidden />
+              <div class="photo-calorie-badge" id="actualCalorieBadge" hidden>
+                <small>實際吃掉約</small>
+                <strong><span id="actualCalories">0</span> kcal</strong>
+              </div>
+              <span class="upload-icon">＋</span>
+              <strong>吃完了，再拍一下</strong>
+              <small>用吃前與吃後差異，估算實際吃掉多少，也會記錄用餐時間。</small>
+            </label>
+
+            <form class="estimate-card" id="mealForm">
+              <div class="auto-detect-card">
+                <p class="panel-label">AI 自動判斷</p>
+                <div class="auto-chip-row">
+                  <span id="autoMealType">餐別：自動</span>
+                  <span id="autoPortion">份量：一般</span>
+                  <span id="autoTime">時間：現在</span>
+                </div>
+              </div>
+
+              <div class="quick-meal-panel" aria-label="快速選餐">
+                <p class="panel-label">傻瓜快選</p>
+                <div class="meal-chip-grid">
+                  <button type="button" class="meal-chip" data-meal="老饕排骨便當" data-portion="1.3" data-confidence="78">🍱 排骨便當</button>
+                  <button type="button" class="meal-chip" data-meal="輕食沙拉與燕麥" data-portion="0.7" data-confidence="82">🥗 清爽沙拉</button>
+                  <button type="button" class="meal-chip" data-meal="拿鐵與肉桂捲" data-portion="1" data-confidence="76">☕ 下午茶</button>
+                  <button type="button" class="meal-chip" data-meal="超商奮起湖便當" data-portion="1" data-confidence="80">🏪 超商便當</button>
+                  <button type="button" class="meal-chip" data-meal="精緻排餐與火鍋" data-portion="1.3" data-confidence="72">🥩 肉肉大餐</button>
+                  <button type="button" class="meal-chip" data-meal="御飯糰與無糖豆漿" data-portion="0.7" data-confidence="84">🍙 輕盈超商</button>
+                </div>
+              </div>
+
+              <details class="optional-details">
+                <summary>需要更準再補充</summary>
+              <div class="form-row">
+                <label for="mealText">需要修正再補充</label>
+                <textarea id="mealText" rows="4" placeholder="可空白。例：拉麵不喝湯、壽司 8 貫、唐揚雞便當、便利商店飯糰加拿鐵。"></textarea>
+              </div>
+
+              <div class="form-row two-col assist-controls">
+                <div>
+                  <label for="portion">份量修正</label>
+                  <select id="portion">
+                    <option value="0.7">小份</option>
+                    <option value="1" selected>一般</option>
+                    <option value="1.3">大份</option>
+                    <option value="1.6">加量</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="mealType">餐別修正</label>
+                  <select id="mealType">
+                    <option>早餐</option>
+                    <option selected>午餐</option>
+                    <option>晚餐</option>
+                    <option>點心</option>
+                    <option>飲料</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <label for="mealScenario">用餐情境</label>
+                <select id="mealScenario">
+                  <option value="normal">一般餐</option>
+                  <option value="set">套餐 / 多品項</option>
+                  <option value="counter">板前 / 無菜單</option>
+                  <option value="treat">放縱餐</option>
+                </select>
+              </div>
+              </details>
+
+              <div class="portion-buttons" aria-label="快速修正份量">
+                <button type="button" data-portion="0.7">小一點</button>
+                <button type="button" data-portion="1">差不多</button>
+                <button type="button" data-portion="1.3">大一點</button>
+              </div>
+
+              <button class="primary-action big-action" id="estimateButton" type="button">看這餐熱量</button>
+
+              <div class="ai-result" id="aiResult" hidden>
+                <p class="panel-label">這餐大約</p>
+                <div class="calorie-answer">
+                  <strong><span id="estimatedCalories">0</span></strong>
+                  <span>kcal</span>
+                </div>
+                <small class="food-label" id="foodLabel">辨識：餐點</small>
+                <div class="macro-row">
+                  <span>蛋白 <b id="proteinResult">0g</b></span>
+                  <span>碳水 <b id="carbResult">0g</b></span>
+                  <span>脂肪 <b id="fatResult">0g</b></span>
+                </div>
+                <div class="detected-list" id="detectedList"></div>
+                <div class="allergy-alert" id="allergyAlert" hidden></div>
+                <p id="estimateNote"></p>
+                <div class="next-meal-card">
+                  <p class="panel-label">現在怎麼調整</p>
+                  <p id="nextMealResult">加入紀錄後會更新下一餐建議。</p>
+                </div>
+                <div class="next-meal-card actual-card" id="actualCard" hidden>
+                  <p class="panel-label">吃完校正</p>
+                  <p id="actualNote">吃完後再拍一下，可估算實際攝取。</p>
+                </div>
+                <button class="secondary-action" type="submit">加入今日紀錄</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="body" aria-label="我的身體">
+          <div class="body-grid">
+            <form class="settings-card" id="settingsForm">
+              <div class="section-head">
+                <div>
+                  <p class="eyebrow">Body & Goal</p>
+                  <h2>身高體重與減重目標</h2>
+                </div>
+              </div>
+              <div class="form-row four-col">
+                <div>
+                  <label for="heightCm">身高 cm</label>
+                  <input id="heightCm" type="number" min="120" max="230" step="1" />
+                </div>
+                <div>
+                  <label for="startWeight">目前體重 kg</label>
+                  <input id="startWeight" type="number" min="30" max="250" step="0.1" />
+                </div>
+                <div>
+                  <label for="age">年齡</label>
+                  <input id="age" type="number" min="12" max="100" step="1" />
+                </div>
+                <div>
+                  <label for="sex">生理性別</label>
+                  <select id="sex">
+                    <option value="male">男</option>
+                    <option value="female">女</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row three-col">
+                <div>
+                  <label for="targetWeight">目標體重 kg</label>
+                  <input id="targetWeight" type="number" min="30" max="250" step="0.1" />
+                </div>
+                <div>
+                  <label for="deadline">目標日期</label>
+                  <input id="deadline" type="date" />
+                </div>
+                <div>
+                  <label for="activity">活動量</label>
+                  <select id="activity">
+                    <option value="1.2">久坐</option>
+                    <option value="1.375">輕量活動</option>
+                    <option value="1.55">中等活動</option>
+                    <option value="1.725">高活動</option>
+                  </select>
+                </div>
+              </div>
+              <div class="recommend-card">
+                <div>
+                  <p class="panel-label">系統建議每日熱量</p>
+                  <strong><span id="recommendedCalories">-</span> kcal</strong>
+                  <small id="bmiExplain">輸入身高體重後自動計算。</small>
+                </div>
+                <button class="text-action" id="applySuggestedCalories" type="button">套用建議</button>
+              </div>
+                <div class="form-row two-col">
+                <div>
+                  <label for="dailyTarget">每日熱量目標 kcal</label>
+                  <input id="dailyTarget" type="number" min="900" max="5000" step="50" />
+                </div>
+                <div>
+                  <label for="proteinTarget">蛋白質目標 g</label>
+                  <input id="proteinTarget" type="number" min="30" max="250" step="5" />
+                </div>
+              </div>
+              <button class="primary-action" type="submit">儲存我的目標</button>
+            </form>
+
+            <form class="settings-card" id="weightForm">
+              <div class="section-head">
+                <div>
+                  <p class="eyebrow">Check-in</p>
+                  <h2>今天量體重</h2>
+                </div>
+              </div>
+              <div class="form-row two-col">
+                <div>
+                  <label for="todayWeight">今日體重 kg</label>
+                  <input id="todayWeight" type="number" min="30" max="250" step="0.1" placeholder="例：78.5" />
+                  <div class="quick-counter" aria-label="快速調整今日體重">
+                    <button type="button" data-weight-delta="-0.5">-0.5</button>
+                    <button type="button" data-weight-delta="0.5">+0.5</button>
+                  </div>
+                </div>
+              </div>
+              <button class="secondary-action" type="submit">儲存體重</button>
+            </form>
+
+            <form class="settings-card" id="stepsForm">
+              <div class="section-head">
+                <div>
+                  <p class="eyebrow">Move</p>
+                  <h2>今天步數</h2>
+                </div>
+              </div>
+              <div class="form-row two-col">
+                <div>
+                  <label for="todaySteps">今日步數</label>
+                  <input id="todaySteps" type="number" min="0" max="80000" step="100" placeholder="例：11742" />
+                  <div class="steps-preset-row" aria-label="快速選擇今日步數">
+                    <button type="button" data-steps="3000">3,000</button>
+                    <button type="button" data-steps="6000">6,000</button>
+                    <button type="button" data-steps="12000">12,000</button>
+                  </div>
+                </div>
+                <div>
+                  <label for="stepTarget">步數目標</label>
+                  <input id="stepTarget" type="number" min="1000" max="30000" step="500" placeholder="例：8000" />
+                </div>
+              </div>
+              <button class="secondary-action" type="submit">儲存步數</button>
+              <small class="form-status" id="stepsStatus" hidden></small>
+            </form>
+          </div>
+          <div class="goal-card">
+            <p class="eyebrow">Goal Progress</p>
+            <h2><span id="currentWeightText">-</span> kg → <span id="targetWeightText">-</span> kg</h2>
+            <div class="progress-track"><span id="goalProgressBar"></span></div>
+            <p id="goalAdvice">設定目標後，這裡會顯示減重進度。</p>
+          </div>
+          <div class="meal-list weight-list" id="weightList"></div>
+        </section>
+
+        <section class="tab-panel" id="log" aria-label="飲食紀錄">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Today Log</p>
+              <h2>今日飲食</h2>
+            </div>
+            <button class="text-action" id="clearToday" type="button">清空今日</button>
+          </div>
+          <div class="summary-strip">
+            <span>餐點 <b id="todayMeals">0</b></span>
+            <span>蛋白目標 <b id="proteinGoalText">90g</b></span>
+            <span>熱量目標 <b id="calorieGoalText">1800</b></span>
+          </div>
+          <p class="storage-note">文字紀錄會永久保存在這支手機；照片會存在本機，除非清除瀏覽器資料或刪除主畫面 App。</p>
+          <div class="meal-list" id="mealList"></div>
+        </section>
+
+        <section class="tab-panel" id="insight" aria-label="趨勢統計">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">7 / 30 Days</p>
+              <h2>熱量趨勢</h2>
+            </div>
+            <div class="segmented">
+              <button class="range-btn active" data-range="7" type="button">7日</button>
+              <button class="range-btn" data-range="30" type="button">30日</button>
+            </div>
+          </div>
+          <div class="chart" id="calorieChart"></div>
+          <div class="insight-grid">
+            <article>
+              <span id="avgCalories">0</span>
+              <small>平均熱量</small>
+            </article>
+            <article>
+              <span id="bestDay">-</span>
+              <small>最接近目標</small>
+            </article>
+            <article>
+              <span id="loggedDays">0</span>
+              <small>有紀錄天數</small>
+            </article>
+          </div>
+          <form class="settings-card gemini-card" id="geminiForm">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Gemini Layout Coach</p>
+                <h2>請 Gemini 幫我們優化排版</h2>
+              </div>
+            </div>
+            <div class="form-row">
+              <label for="geminiPrompt">你想請 Gemini 看什麼？</label>
+              <textarea id="geminiPrompt" rows="4" placeholder="例：參考我給的獺獺 OtterFit 截圖，讓首頁更高級、拍照按鈕更明顯、日期區更好看。"></textarea>
+            </div>
+            <button class="secondary-action" id="askGeminiLayout" type="submit">送給 Gemini 分析</button>
+            <div class="gemini-output" id="geminiOutput" hidden></div>
+          </form>
+        </section>
+      </section>
+    </main>
+
+    <div class="mobile-action-bar">
+      <button class="mobile-camera-cta dark" id="mobileEstimateCTA" type="button">
+        <span aria-hidden="true">📸</span>
+        <b>拍照估熱量</b>
+      </button>
+      <button class="mobile-camera-cta" id="cameraCoachCTA" type="button">
+        <span aria-hidden="true">✏️</span>
+        <b>手動記餐</b>
+      </button>
+      <button class="mobile-camera-cta ghost" id="finalComboCTA" type="button">
+        <span aria-hidden="true">✅</span>
+        <b>合照校正</b>
+      </button>
+    </div>
+
+    <script src="./app.js?v=49"></script>
+  </body>
+</html>

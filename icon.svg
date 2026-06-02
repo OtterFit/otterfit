@@ -1,0 +1,37 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="74" y1="54" x2="438" y2="458" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fffaf0"/>
+      <stop offset="1" stop-color="#eef5ec"/>
+    </linearGradient>
+    <linearGradient id="tomato" x1="128" y1="118" x2="378" y2="404" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f47a55"/>
+      <stop offset="0.58" stop-color="#d8493c"/>
+      <stop offset="1" stop-color="#a93432"/>
+    </linearGradient>
+    <linearGradient id="leaf" x1="180" y1="86" x2="332" y2="176" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#84a86f"/>
+      <stop offset="1" stop-color="#3f765f"/>
+    </linearGradient>
+    <filter id="softShadow" x="88" y="82" width="336" height="350" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="22" stdDeviation="18" flood-color="#5f2d28" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="118" fill="url(#bg)"/>
+  <circle cx="402" cy="118" r="26" fill="#d3a247"/>
+  <circle cx="116" cy="390" r="18" fill="#557a68"/>
+  <g filter="url(#softShadow)">
+    <path d="M256 143c79 0 143 62 143 139 0 89-66 149-143 149s-143-60-143-149c0-77 64-139 143-139Z" fill="url(#tomato)"/>
+    <path d="M188 164c14-42 44-68 68-82 20 31 23 62 5 92-21-25-45-29-73-10Z" fill="url(#leaf)"/>
+    <path d="M252 171c2-45 20-78 43-101 30 25 43 56 37 93-29-14-55-12-80 8Z" fill="url(#leaf)"/>
+    <path d="M306 171c23-31 52-45 88-44-1 37-17 65-48 84-9-25-22-37-40-40Z" fill="url(#leaf)"/>
+    <path d="M174 235c13-37 39-60 77-69" fill="none" stroke="#fff1df" stroke-width="18" stroke-linecap="round" opacity="0.42"/>
+    <circle cx="215" cy="274" r="17" fill="#2b2527"/>
+    <circle cx="302" cy="274" r="17" fill="#2b2527"/>
+    <circle cx="209" cy="267" r="5" fill="#fff"/>
+    <circle cx="296" cy="267" r="5" fill="#fff"/>
+    <path d="M218 331c25 23 55 23 80 0" fill="none" stroke="#fff5e8" stroke-width="16" stroke-linecap="round"/>
+    <path d="M158 309c-20 6-35-3-41-20" fill="none" stroke="#f0b9a0" stroke-width="14" stroke-linecap="round"/>
+    <path d="M354 309c20 6 35-3 41-20" fill="none" stroke="#f0b9a0" stroke-width="14" stroke-linecap="round"/>
+  </g>
+</svg>

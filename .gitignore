@@ -1,0 +1,13 @@
+.env
+.env.*
+!.env.example
+node_modules/
+.DS_Store
+dist-pages/
+*.log
+*.err.log
+*.out.log
+cloudflared.exe
+.wrangler/
+.cache/
+coverage/

@@ -1,0 +1,17 @@
+{
+  "name": "獺獺 OtterFit",
+  "short_name": "獺獺",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#FAF8F5",
+  "theme_color": "#7BC0FF",
+  "description": "獺獺陪你吃飯、記錄生活，拍照估熱量並給下一餐建議。",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

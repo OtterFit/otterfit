@@ -1,0 +1,11 @@
+{
+  "name": "toma-daily",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "devDependencies": {
+    "wrangler": "^4.95.0"
+  }
+}

@@ -1,679 +1,639 @@
-<!doctype html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#7BC0FF" />
-    <title>獺獺 OtterFit | 拍一下，吃得剛剛好</title>
-    <link rel="manifest" href="./manifest.webmanifest" />
-    <link rel="icon" href="./icon.svg" />
-    <link rel="apple-touch-icon" href="./icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=49" />
-  </head>
-  <body>
-    <section class="tester-login active" id="testerLogin" aria-label="試用帳號登入">
-      <form class="tester-card" id="testerLoginForm">
-        <div class="brand-row">
-          <div class="brand-mark" aria-hidden="true">
-            <span class="lens"></span>
-            <span class="spark"></span>
-          </div>
-          <div>
-            <p class="eyebrow">Private Beta</p>
-            <h1>獺獺 OtterFit</h1>
-            <p class="subtitle">四人試用版，登入後會從自己的乾淨資料開始。</p>
-          </div>
-        </div>
-        <div class="form-row">
-          <label for="testerAccount">試用帳號</label>
-          <select id="testerAccount">
-            <option value="lynn">Lynn</option>
-            <option value="leia">Leia</option>
-            <option value="andrew">Andrew</option>
-            <option value="sally">Sally</option>
-          </select>
-        </div>
-        <div class="quick-login-grid" aria-label="快速登入">
-          <button type="button" data-quick-login="lynn">Lynn</button>
-          <button type="button" data-quick-login="leia">Leia</button>
-          <button type="button" data-quick-login="andrew">Andrew</button>
-          <button type="button" data-quick-login="sally">Sally</button>
-        </div>
-        <div class="form-row">
-          <label for="testerPassword">密碼</label>
-          <input id="testerPassword" type="password" autocomplete="current-password" placeholder="輸入試用密碼" />
-        </div>
-        <button class="primary-action big-action" type="submit">登入試用</button>
-        <p class="storage-note">Private beta 測試：可直接點名字快速登入。資料目前存在各自手機瀏覽器，正式測試版會改成雲端會員。</p>
-        <p class="form-status" id="testerLoginStatus" hidden></p>
-      </form>
-    </section>
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>OtterFit 獺獺 | 看起來在耍廢，其實在變強</title>
 
-    <section class="onboarding" id="onboarding" aria-label="建立個人檔案">
-      <form class="onboarding-card" id="onboardingForm">
-        <div class="brand-row">
-          <div class="brand-mark" aria-hidden="true">
-            <span class="lens"></span>
-            <span class="spark"></span>
-          </div>
-          <div>
-            <p class="eyebrow">Welcome</p>
-            <h1>獺獺 OtterFit</h1>
-            <p class="subtitle">獺獺陪你吃飯、記錄生活，也慢慢變成喜歡的體態。</p>
-          </div>
-        </div>
+    <!-- 🔑 PWA 品牌大一統：修正 iPhone 測試員加入主畫面搜尋漏洞 -->
+    <meta name="apple-mobile-web-app-title" content="OtterFit 獺獺">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="apple-touch-icon" href="./icon.svg">
 
-        <div class="onboarding-grid">
-          <div class="form-row">
-            <label for="profileName">你的名字</label>
-            <input id="profileName" autocomplete="name" placeholder="例：Lynn" />
-          </div>
-          <div class="form-row">
-            <label for="profilePurpose">使用目的</label>
-            <select id="profilePurpose">
-              <option>瘦身</option>
-              <option>維持肌肉</option>
-              <option>增重</option>
-              <option>旅行飲食管理</option>
-            </select>
-          </div>
-        </div>
+    <!-- 導入高級文青襯線與無襯線數字體 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;600;800&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700&display=swap" rel="stylesheet">
 
-        <div class="onboarding-grid four">
-          <div class="form-row">
-            <label for="onboardHeight">身高 cm</label>
-            <input id="onboardHeight" type="number" min="120" max="230" step="1" value="170" />
-          </div>
-          <div class="form-row">
-            <label for="onboardWeight">目前體重 kg</label>
-            <input id="onboardWeight" type="number" min="30" max="250" step="0.1" value="80" />
-          </div>
-          <div class="form-row">
-            <label for="onboardAge">年齡</label>
-            <input id="onboardAge" type="number" min="12" max="100" step="1" value="40" />
-          </div>
-          <div class="form-row">
-            <label for="onboardSex">生理性別</label>
-            <select id="onboardSex">
-              <option value="male">男</option>
-              <option value="female">女</option>
-            </select>
-          </div>
-        </div>
+    <style>
+        /* ==========================================
+           1. 高級文青色彩與字型系統 (CSS Tokens)
+           ========================================== */
+        :root {
+            --color-bg: #FAF7F1;                    /* 全域底色：輕乳酪燕麥白 */
+            --color-surface: #FFFDF8;               /* 卡片層：純淨奶油白 */
+            --color-surface-soft: #F5EFE7;          /* 次要區塊底色 */
+            --color-text: #4E3629;                  /* 主文字：水獺可可棕 */
+            --color-muted: #9A8A82;                 /* 次要文字：亞麻暖灰 */
+            --color-otter-brown: #4E3629;
+            --color-river-blue: #7A9AAF;            /* 核心進度大環：低飽和霧藍 */
+            --color-river-light: #F0F5F8;
+            --color-salmon-pink: #C95C4A;           /* 黃金主控 CTA：完熟暖紅 (海獺番茄色) */
+            --color-salmon-soft: #F2D3CC;
+            --color-sage: #6F8066;                  /* 健康達標：鼠尾草綠 */
+            --color-health-bg: #EDF5EE;
+            --color-border: #E8DED2;               /* 細線米灰 */
 
-        <div class="onboarding-grid">
-          <div class="form-row">
-            <label for="onboardTargetWeight">目標體重 kg</label>
-            <input id="onboardTargetWeight" type="number" min="30" max="250" step="0.1" value="72" />
-          </div>
-          <div class="form-row">
-            <label for="onboardDeadline">希望達成日期</label>
-            <input id="onboardDeadline" type="date" />
-          </div>
-        </div>
+            --font-sans: "Inter", "Noto Sans TC", system-ui, sans-serif;
+            --font-serif: "Noto Serif TC", serif;
+            --radius-sm: 12px;
+            --radius-md: 18px;
+            --radius-lg: 28px;
+            --shadow-card: 0 14px 34px rgba(78, 54, 41, 0.04);
+            --shadow-button: 0 10px 24px rgba(201, 92, 74, 0.12);
+            --ease-soft: cubic-bezier(.2, .8, .2, 1);
+        }
 
-        <div class="form-row">
-          <label for="allergies">過敏 / 不能吃的食物</label>
-          <textarea id="allergies" rows="3" placeholder="例：蝦、蟹、花生、牛奶、堅果、麩質。拍照或輸入餐點包含這些字，會提醒你。"></textarea>
-        </div>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-sans); -webkit-tap-highlight-color: transparent; letter-spacing: -0.01em; }
+        body { background-color: var(--color-bg); color: var(--color-text); padding-bottom: calc(150px + env(safe-area-inset-bottom)); display: flex; justify-content: center; line-height: 1.6; }
 
-        <div class="recommend-card">
-          <div>
-            <p class="panel-label">建檔後會自動計算</p>
-            <strong>BMI + 每日熱量</strong>
-            <small>之後每次拍照，會依你的目標與禁忌食物客製化提醒。</small>
-          </div>
-        </div>
+        /* 📱 手機直式單欄流與防誤觸大留白排版 */
+        .app-container { width: 100%; max-width: 480px; padding: 0 24px; display: none; }
 
-        <button class="primary-action big-action" type="submit">開始使用</button>
-        <button class="text-action onboarding-skip" id="quickStart" type="button">先試用拍照測熱量</button>
-      </form>
-    </section>
+        /* 頂部固定 Header */
+        .header { padding-top: calc(24px + env(safe-area-inset-top)); padding-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--color-border); margin-bottom: 24px; }
+        .brand-zone .sub-title { font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--color-salmon-pink); font-weight: 700; }
+        .brand-zone .main-title { font-family: var(--font-serif); font-size: 24px; font-weight: 700; }
+        .user-status-tag { font-size: 11px; font-weight: 600; background: var(--color-surface); padding: 6px 14px; border-radius: var(--radius-sm); border: 1px solid var(--color-border); cursor: pointer; }
 
-    <section class="daily-checkin" id="dailyCheckin" aria-label="每日體重打卡">
-      <form class="daily-card" id="dailyCheckinForm">
-        <p class="eyebrow">Daily Check-in</p>
-        <h2>今天先量體重</h2>
-        <p id="dailyGreeting">每天只要 10 秒，獺獺就能幫你調整熱量目標。</p>
-        <div class="form-row two-col">
-          <div>
-            <label for="quickWeight">今日體重 kg</label>
-            <input id="quickWeight" type="number" min="30" max="250" step="0.1" placeholder="例：78.5" />
-          </div>
-        </div>
-        <button class="primary-action big-action" type="submit">完成今日打卡</button>
-        <button class="text-action" id="skipCheckin" type="button">今天先略過</button>
-        <div class="encourage-box" id="encourageBox" hidden></div>
-      </form>
-    </section>
+        /* 核心大主角與摘要儀表板 (手機 RWD 優化強制單欄) */
+        .hero-section { background: var(--color-surface); border-radius: var(--radius-lg); border: 1px solid var(--color-border); box-shadow: var(--shadow-card); padding: 24px; margin-bottom: 24px; display: flex; flex-direction: column-reverse; gap: 20px; }
+        .hero-layout { display: flex; flex-direction: column; width: 100%; gap: 16px; }
 
-    <section class="result-pop" id="resultPop" aria-label="熱量結果" hidden>
-      <div class="result-pop-card">
-        <figure class="pop-photo-frame" id="popPhotoFrame" hidden>
-          <img id="popMealPhoto" alt="這餐照片" />
-        </figure>
-        <p class="panel-label">這餐大約</p>
-        <strong><span id="popCalories">0</span> kcal</strong>
-        <small id="popFoodLabel">辨識：餐點</small>
-        <small class="api-status" id="popApiStatus" hidden></small>
-        <div class="pop-food-items" id="popFoodItems"></div>
-        <p id="popNextMeal">下一餐建議會顯示在這裡。</p>
-        <div class="action-hints" id="actionHints"></div>
-        <button class="primary-action big-action" id="saveMealFromPop" type="button">沒問題，儲存這餐</button>
-        <label class="secondary-action retake-label" for="mealImage" id="retakePhoto">重新拍照</label>
-        <button class="secondary-action" id="closeResultPop" type="button">知道了</button>
-      </div>
-    </section>
+        .progress-container { position: relative; width: 100%; height: 110px; display: flex; justify-content: center; align-items: center; }
+        .progress-svg-box { position: relative; width: 110px; height: 110px; }
+        .progress-svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+        .progress-circle-bg { fill: none; stroke: var(--color-surface-soft); stroke-width: 8; }
+        .progress-circle-bar { fill: none; stroke: var(--color-river-blue); stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 0.5s ease; }
+        .progress-text { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .progress-text .number { font-family: 'Inter'; font-size: 24px; font-weight: 800; color: var(--color-text); }
+        .progress-text .unit { font-size: 9px; color: var(--color-muted); font-weight: 600; margin-top: 2px; }
+        .progress-info-sub { font-size: 11px; color: var(--color-muted); text-align: center; margin-top: 6px; font-weight: 500; }
 
-    <section class="camera-modal" id="cameraModal" aria-label="拍照互動" hidden>
-      <div class="camera-card">
-        <div class="camera-viewfinder">
-          <span class="corner tl"></span>
-          <span class="corner tr"></span>
-          <span class="corner bl"></span>
-          <span class="corner br"></span>
-          <div class="scan-line" id="scanLine"></div>
-          <div class="camera-dish">
-            <span>🥗</span>
-            <b>AI 餐盤掃描</b>
-          </div>
-        </div>
-        <div class="scan-progress" id="scanProgress" hidden>
-          <span id="scanProgressBar"></span>
-        </div>
-        <p id="cameraModalText">把餐點放在畫面中央，獺獺會先幫你估算。</p>
-        <div class="camera-actions">
-          <label class="primary-action" for="mealImage" id="realUploadFromModal">上傳照片</label>
-          <button class="secondary-action" id="simulateMealScan" type="button">上傳照片（模擬）</button>
-          <button class="text-action" id="closeCameraModal" type="button">關閉</button>
-        </div>
-      </div>
-    </section>
+        /* 🦦 托馬海獺 Toma 專屬物理果凍律動空間 */
+        .toma-hero-aquarium { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; background: var(--color-surface-soft); padding: 20px 16px; border-radius: var(--radius-md); border: 1px solid var(--color-border); cursor: pointer; transition: transform 0.22s var(--ease-soft); }
+        .toma-hero-aquarium:active { transform: scale(0.97); }
 
-    <section class="achievement-pop" id="achievementPop" aria-label="成就解鎖" hidden>
-      <div class="achievement-card">
-        <p class="eyebrow">Achievement Unlocked</p>
-        <strong id="achievementTitle">獺獺進化了</strong>
-        <span id="achievementBadge">✨</span>
-        <p id="achievementText">體態控管進度達標，截圖分享你的新狀態。</p>
-        <button class="primary-action" id="closeAchievement" type="button">太好了</button>
-      </div>
-    </section>
+        /* 放大 3 倍並導入手繪風格之 Spine 呼吸微律動 */
+        .toma-giant-avatar { font-size: 64px; line-height: 1; display: inline-block; transform-origin: bottom center; animation: q-otter-breath 4s cubic-bezier(.45, 0, .55, 1) infinite; filter: drop-shadow(0 6px 12px rgba(78, 54, 41, 0.08)); }
+        @keyframes q-otter-breath { 0%, 100% { transform: scale(1) translateY(0); } 50% { transform: scale(1.08, 0.94) translateY(2px); } }
 
-    <main class="app-shell">
-      <aside class="dashboard" aria-label="今日總覽">
-        <div class="brand-row">
-          <div class="brand-mark" aria-hidden="true">
-            <span class="lens"></span>
-            <span class="spark"></span>
-          </div>
-          <div>
-            <p class="eyebrow">OtterFit Lifestyle</p>
-            <h1>🦦 獺獺 OtterFit</h1>
-            <p class="subtitle"><span id="userGreeting">水獺飯友</span></p>
-          </div>
-        </div>
+        /* 狂戳大主角時的物理爆彈彈跳效果 */
+        .wobble-pop { animation: q-otter-poke 0.45s cubic-bezier(.175, .885, .32, 1.275) !important; }
+        @keyframes q-otter-poke { 0% { transform: scale(1); } 25% { transform: scale(1.3, 0.7) rotate(-6deg); } 50% { transform: scale(0.8, 1.2) rotate(4deg); } 100% { transform: scale(1) rotate(0deg); } }
 
-        <div class="calorie-ring" aria-label="今日剩餘熱量">
-          <svg viewBox="0 0 160 160" role="img" aria-labelledby="ring-title">
-            <title id="ring-title">今日剩餘熱量</title>
-            <circle class="ring-bg" cx="80" cy="80" r="68"></circle>
-            <circle class="ring-progress" cx="80" cy="80" r="68"></circle>
-          </svg>
-          <div class="ring-copy">
-            <span id="remainingCalories">0</span>
-            <small>kcal 今天還能吃</small>
-          </div>
-        </div>
+        .toma-stage-badge { background: var(--color-otter-brown); color: #FFF; font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 6px; letter-spacing: 0.05em; }
+        .bubble-speech-zone { background: var(--color-surface); border: 1px solid var(--color-border); padding: 12px; border-radius: var(--radius-sm); font-size: 12px; line-height: 1.5; font-weight: 500; color: var(--color-text); text-align: center; width: 100%; }
 
-        <button class="toma-coach" id="tomaCoach" type="button" aria-label="獺獺今日提醒">
-          <span class="toma-face" aria-hidden="true">🦦</span>
-          <span class="otter-stage" id="otterStage">圓滾滾初心獺</span>
-          <b id="tomaBubble">嘿，我是你的水獺飯友。先拍第一餐，我陪你慢慢變強。</b>
-        </button>
+        .status-alert-card { padding: 14px 20px; border-radius: var(--radius-md); font-size: 12px; margin-bottom: 24px; display: none; border: 1px solid var(--color-border); }
+        .status-alert-card.success { display: block; background: var(--color-health-bg); color: var(--color-health-green); border-color: rgba(111, 128, 102, 0.15); }
 
-        <div class="metric-grid">
-          <article>
-            <i aria-hidden="true">🥗</i>
-            <span id="todayCalories">0</span>
-            <small>已吃熱量</small>
-          </article>
-          <article>
-            <i aria-hidden="true">⚖️</i>
-            <span id="bmiText">-</span>
-            <small>BMI</small>
-          </article>
-          <article>
-            <i aria-hidden="true">🥰</i>
-            <span id="todayProtein">0g</span>
-            <small>蛋白質</small>
-          </article>
-          <article>
-            <i aria-hidden="true">👟</i>
-            <span id="weightProgress">0%</span>
-            <small>生活小散步</small>
-          </article>
-        </div>
+        /* 導覽列 (純文字無 Emoji 升級) */
+        .tab-navigation { display: flex; gap: 16px; margin-bottom: 24px; border-bottom: 1px solid var(--color-border); padding-bottom: 4px; }
+        .tab-btn { background: none; border: none; color: var(--color-muted); font-size: 14px; font-weight: 500; padding: 8px 4px; cursor: pointer; position: relative; }
+        .tab-btn.active { color: var(--color-text); font-weight: 700; }
+        .tab-btn.active::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 100%; height: 2px; background: var(--color-text); }
+        .tab-panel { display: none; padding-top: 8px; }
+        .tab-panel.active { display: block; animation: fadeIn 0.3s var(--ease-soft); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-        <div class="coach-panel">
-          <div class="panel-title-row">
-            <p class="panel-label">下一餐怎麼吃</p>
-            <span id="riskBadge">待記錄</span>
-          </div>
-          <p id="coachAdvice">先拍第一餐。系統會依照你的 BMI、目標體重、今日已吃內容，直接建議下一餐。</p>
-        </div>
-        <button class="text-action" id="editProfile" type="button">編輯個人檔案</button>
-        <button class="text-action subtle" id="switchTester" type="button">切換試用帳號</button>
-      </aside>
+        /* 大拇指防誤觸 (Touch Target 48px 優化熱區) */
+        .input-card-box { background: var(--color-surface); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow-card); border: 1px solid var(--color-border); }
+        .select-title { font-size: 12px; font-weight: 700; margin-bottom: 12px; color: var(--color-muted); text-transform: uppercase; letter-spacing: 0.05em; }
 
-      <section class="workspace">
-        <nav class="tabs" aria-label="功能切換">
-          <button class="tab active" data-tab="scan" type="button">紀錄美食</button>
-          <button class="tab" data-tab="body" type="button">我的身體</button>
-          <button class="tab" data-tab="log" type="button">飯友日記</button>
-          <button class="tab" data-tab="insight" type="button">趨勢</button>
-        </nav>
+        .meal-chip-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
+        .meal-chip { height: 48px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; color: var(--color-text); cursor: pointer; }
+        .meal-chip.selected { background: var(--color-surface-soft); border-color: var(--color-text); font-weight: 700; }
 
-        <section class="tab-panel active" id="scan" aria-label="拍照測熱量">
-          <div class="hero-strip">
-            <div>
-              <p class="eyebrow">OtterFit Daily</p>
-              <h2>吃得剛好，體態更好</h2>
-              <p class="hero-subtitle">用一張照片記錄每一餐，讓體態管理變成有質感的日常。</p>
+        /* 表單 State 完全隔離防禦區 */
+        .form-group-box { background: var(--color-surface); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 16px; box-shadow: var(--shadow-card); border: 1px solid var(--color-border); }
+        .form-title { font-size: 13px; font-weight: 700; margin-bottom: 14px; color: var(--color-muted); }
+        .counter-row { display: flex; justify-content: space-between; align-items: center; background: var(--color-surface-soft); border-radius: var(--radius-sm); padding: 6px 12px; height: 50px; }
+        .btn-counter-calc { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-surface); color: var(--color-text); font-size: 18px; font-weight: 700; cursor: pointer; }
+        .counter-display-value { font-family: 'Inter'; font-size: 18px; font-weight: 800; }
+        .steps-preset-row { display: flex; gap: 10px; margin-top: 12px; }
+        .btn-preset-steps { flex: 1; height: 42px; border-radius: var(--radius-sm); border: 1px solid var(--color-border); background: var(--color-surface); font-size: 12px; font-weight: 600; color: var(--color-text); cursor: pointer; }
+        .btn-preset-steps.active { background: var(--color-text); color: #FFF; border-color: var(--color-text); }
+        .strategy-preset-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .btn-strategy-sim { height: 42px; border-radius: var(--radius-sm); border: 1px solid var(--color-border); background: none; color: var(--color-muted); font-size: 12px; font-weight: 500; cursor: pointer; }
+
+        /* 四宮格看板 (純淨無 Emoji 降維優化) */
+        .data-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px; padding-bottom: 20px; }
+        .data-card { background: var(--color-surface); border-radius: var(--radius-md); padding: 16px 20px; border: 1px solid var(--color-border); box-shadow: var(--shadow-card); }
+        .data-card .title { font-size: 11px; color: var(--color-muted); font-weight: 600; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.03em; }
+        .data-card .value { font-family: 'Inter'; font-size: 20px; font-weight: 800; color: var(--color-text); }
+        .data-card .value span { font-size: 11px; font-weight: 500; color: var(--color-muted); margin-left: 2px; }
+
+        /* 飯友日記歷史列表 */
+        .history-list { display: flex; flex-direction: column; gap: 12px; }
+        .history-item { background: var(--color-surface); border-radius: var(--radius-md); padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--color-border); box-shadow: var(--shadow-card); }
+
+        /* 智慧結果分析彈窗 */
+        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(78,54,41,0.2); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-box { background: var(--color-surface); width: 92%; max-width: 420px; border-radius: var(--radius-lg); padding: 32px; border: 1px solid var(--color-border); box-shadow: var(--shadow-card); }
+        .insight-row-box { background: var(--color-surface-soft); padding: 16px; border-radius: var(--radius-md); font-size: 13px; margin-bottom: 16px; border: 1px solid var(--color-border); }
+        .insight-badge-flex { display: flex; gap: 8px; margin-top: 8px; }
+        .insight-badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; background: var(--color-surface); border: 1px solid var(--color-border); }
+
+        /* 🔑 修正 Bug 1：標準帳密登入框與隱私認證 */
+        .login-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--color-bg); display: flex; justify-content: center; align-items: center; z-index: 9999; padding: 24px; }
+        .login-box { background: var(--color-surface); width: 100%; max-width: 400px; border-radius: var(--radius-lg); padding: 40px 28px; border: 1px solid var(--color-border); box-shadow: var(--shadow-card); text-align: center; }
+        .login-input-group { text-align: left; margin-top: 24px; margin-bottom: 20px; }
+        .login-label { font-size: 12px; font-weight: 700; color: var(--color-muted); text-transform: uppercase; margin-bottom: 6px; display: block; }
+        .login-input-style { width: 100%; height: 48px; border-radius: var(--radius-sm); border: 1px solid var(--color-border); padding: 0 16px; font-size: 15px; color: var(--color-text); background: var(--color-surface-soft); outline: none; margin-bottom: 16px; }
+        .login-input-style:focus { border-color: var(--color-river-blue); background: #FFF; }
+        .btn-submit-login { width: 100%; height: 48px; border-radius: 999px; border: none; background: var(--color-otter-brown); color: #FFF; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 8px; }
+        .login-error-tip { font-size: 12px; color: var(--color-salmon-pink); font-weight: 600; margin-top: -8px; margin-bottom: 12px; text-align: left; display: none; }
+
+        /* 🌟 修復 Bug 1：Manus 認證獨立全螢幕 Onboarding 初始引導 Wizard */
+        .onboard-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--color-bg); display: none; flex-direction: column; align-items: center; justify-content: flex-start; z-index: 9998; padding: 40px 24px; overflow-y: auto; }
+        .onboard-screen { width: 100%; max-width: 420px; display: none; animation: fadeIn 0.4s var(--ease-soft); }
+        .onboard-screen.active { display: block; }
+        .onboard-card-click { width: 100%; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 18px; margin-bottom: 12px; text-align: left; cursor: pointer; }
+        .onboard-card-click.selected { border-color: var(--color-text); background: var(--color-surface-soft); font-weight: 700; }
+        .range-slider-style { width: 100%; -webkit-appearance: none; height: 6px; background: var(--color-border); border-radius: 3px; outline: none; margin: 20px 0; }
+        .range-slider-style::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--color-text); cursor: pointer; }
+
+        /* 🌟 修復 Bug 2：成就彈窗改編為 2.5 秒自動消失之輕量化非阻斷 Toast */
+        .achievement-toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); transform: translateX(-50%) translateY(150%); width: min(calc(100% - 32px), 360px); border-radius: 20px; padding: 16px 20px; background: rgba(255, 253, 251, 0.98); border: 1px solid var(--color-border); box-shadow: 0 16px 44px rgba(51, 26, 21, 0.12); z-index: 9999; display: flex; align-items: center; gap: 12px; transition: transform 0.4s var(--ease-soft); pointer-events: none; }
+        .achievement-toast.active { transform: translateX(-50%) translateY(0); }
+
+        /* 🌟 修復 Bug 3：合併雙層底欄，根除 132px 視覺死角之黃金凸起列 */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(250, 247, 241, 0.92); backdrop-filter: blur(12px); padding: 16px 24px calc(16px + env(safe-area-inset-bottom)) 24px; border-top: 1px solid var(--color-border); z-index: 999; display: flex; justify-content: center; }
+        .btn-main-cta { width: 100%; max-width: 440px; height: 48px; border: none; border-radius: 999px; background: linear-gradient(135deg, #C95C4A, #D97A68); color: #fff; font-size: 14px; font-weight: 700; letter-spacing: 0.03em; box-shadow: var(--shadow-button); cursor: pointer; transition: transform 0.22s var(--ease-soft); }
+        .btn-main-cta:hover { transform: translateY(-1.5px); }
+    </style>
+</head>
+<body>
+
+    <!-- 帳密安全登入蓋板 -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-box">
+            <span style="font-size: 10px; font-weight: 700; color: var(--color-salmon-pink); letter-spacing: 0.15em; text-transform: uppercase;">OtterFit Private Beta</span>
+            <h2 style="font-family: var(--font-serif); font-size: 22px; font-weight: 700; margin-top: 8px; margin-bottom: 4px;">登入飯友日記</h2>
+            <p style="font-size: 12px; color: var(--color-muted);">請輸入實測帳密，新帳號將自動引導啟動初始設定。</p>
+
+            <div class="login-input-group">
+                <label class="login-label">測試員帳號 (Lynn / Leia / Andrew / Sally)</label>
+                <input type="text" id="loginUsername" class="login-input-style" placeholder="輸入帳號 (注意大小寫)" autocomplete="username">
+
+                <label class="login-label">專屬驗證密碼</label>
+                <input type="password" id="loginPassword" class="login-input-style" placeholder="輸入 Toma2026!" autocomplete="current-password">
             </div>
-          </div>
 
-          <section class="date-view" aria-label="日期檢視">
-            <div>
-              <p class="panel-label">Today</p>
-              <strong id="activeDateLabel">今天</strong>
-            </div>
-            <div class="date-strip" id="dateStrip"></div>
-          </section>
-
-          <section class="sparkline-card" aria-label="七日熱量趨勢">
-            <div>
-              <p class="panel-label">7 Days Trend</p>
-              <h3>熱量七日波動</h3>
-            </div>
-            <svg id="sparklineChart" viewBox="0 0 320 86" role="img" aria-label="七日熱量趨勢圖"></svg>
-          </section>
-
-          <section class="course-section" aria-label="套餐逐道紀錄">
-            <div class="course-title">
-              <span>🍽️ 本餐美食進度</span>
-              <span id="courseCount">尚未開始</span>
-            </div>
-            <div class="course-timeline" id="courseTimeline">
-              <span class="course-badge">等待上菜...</span>
-            </div>
-          </section>
-
-          <section class="plan-card" id="planCard" hidden>
-            <div class="plan-title">🥑 獺獺飯友的平衡提案</div>
-            <p id="planContent">這餐大享受！點擊這張卡片，獺獺幫你補記 2500 步散步，讓節奏拉回來。</p>
-          </section>
-
-          <section class="daily-balance" aria-label="今日體態總覽">
-            <div class="balance-ring">
-              <span id="scanRemainingCalories">0</span>
-              <small>kcal 可用</small>
-            </div>
-            <div class="balance-metrics">
-              <article>
-                <small>已吃</small>
-                <strong><span id="scanEatenCalories">0</span></strong>
-              </article>
-              <article>
-                <small>已消耗</small>
-                <strong><span id="scanBurnedCalories">0</span></strong>
-              </article>
-              <article class="wide">
-                <div>
-                  <small>步數</small>
-                  <strong><span id="scanSteps">0</span> / <span id="scanStepTarget">6000</span></strong>
-                </div>
-                <div class="step-track"><span id="scanStepBar"></span></div>
-              </article>
-            </div>
-          </section>
-
-          <div class="meal-mode">
-            <label class="mode-btn active" for="mealImage" data-mode="before" id="mealArrived">
-              <span class="mode-icon dish-icon" aria-hidden="true"></span>
-              <b>餐點上菜囉</b>
-            </label>
-            <label class="mode-btn" for="afterMealImage" data-mode="after" id="mealFinished">
-              <span class="mode-icon done-icon" aria-hidden="true"></span>
-              <b>我吃完了</b>
-            </label>
-          </div>
-
-          <div class="scan-layout">
-            <label class="upload-zone" for="mealImage">
-              <input id="mealImage" type="file" accept="image/*" capture="environment" />
-              <img id="previewImage" alt="餐點照片預覽" hidden />
-              <div class="photo-calorie-badge" id="photoCalorieBadge" hidden>
-                <small>這張圖約</small>
-                <strong><span id="photoCalories">0</span> kcal</strong>
-              </div>
-              <span class="upload-icon">＋</span>
-              <strong id="photoPrompt">餐點上桌後，先拍一下</strong>
-              <small>不用先填資料。系統會自動記錄時間、判斷餐別與估算份量。</small>
-            </label>
-
-            <label class="upload-zone after-zone" for="afterMealImage">
-              <input id="afterMealImage" type="file" accept="image/*" capture="environment" />
-              <img id="afterPreviewImage" alt="吃後照片預覽" hidden />
-              <div class="photo-calorie-badge" id="actualCalorieBadge" hidden>
-                <small>實際吃掉約</small>
-                <strong><span id="actualCalories">0</span> kcal</strong>
-              </div>
-              <span class="upload-icon">＋</span>
-              <strong>吃完了，再拍一下</strong>
-              <small>用吃前與吃後差異，估算實際吃掉多少，也會記錄用餐時間。</small>
-            </label>
-
-            <form class="estimate-card" id="mealForm">
-              <div class="auto-detect-card">
-                <p class="panel-label">AI 自動判斷</p>
-                <div class="auto-chip-row">
-                  <span id="autoMealType">餐別：自動</span>
-                  <span id="autoPortion">份量：一般</span>
-                  <span id="autoTime">時間：現在</span>
-                </div>
-              </div>
-
-              <div class="quick-meal-panel" aria-label="快速選餐">
-                <p class="panel-label">傻瓜快選</p>
-                <div class="meal-chip-grid">
-                  <button type="button" class="meal-chip" data-meal="老饕排骨便當" data-portion="1.3" data-confidence="78">🍱 排骨便當</button>
-                  <button type="button" class="meal-chip" data-meal="輕食沙拉與燕麥" data-portion="0.7" data-confidence="82">🥗 清爽沙拉</button>
-                  <button type="button" class="meal-chip" data-meal="拿鐵與肉桂捲" data-portion="1" data-confidence="76">☕ 下午茶</button>
-                  <button type="button" class="meal-chip" data-meal="超商奮起湖便當" data-portion="1" data-confidence="80">🏪 超商便當</button>
-                  <button type="button" class="meal-chip" data-meal="精緻排餐與火鍋" data-portion="1.3" data-confidence="72">🥩 肉肉大餐</button>
-                  <button type="button" class="meal-chip" data-meal="御飯糰與無糖豆漿" data-portion="0.7" data-confidence="84">🍙 輕盈超商</button>
-                </div>
-              </div>
-
-              <details class="optional-details">
-                <summary>需要更準再補充</summary>
-              <div class="form-row">
-                <label for="mealText">需要修正再補充</label>
-                <textarea id="mealText" rows="4" placeholder="可空白。例：拉麵不喝湯、壽司 8 貫、唐揚雞便當、便利商店飯糰加拿鐵。"></textarea>
-              </div>
-
-              <div class="form-row two-col assist-controls">
-                <div>
-                  <label for="portion">份量修正</label>
-                  <select id="portion">
-                    <option value="0.7">小份</option>
-                    <option value="1" selected>一般</option>
-                    <option value="1.3">大份</option>
-                    <option value="1.6">加量</option>
-                  </select>
-                </div>
-                <div>
-                  <label for="mealType">餐別修正</label>
-                  <select id="mealType">
-                    <option>早餐</option>
-                    <option selected>午餐</option>
-                    <option>晚餐</option>
-                    <option>點心</option>
-                    <option>飲料</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="form-row">
-                <label for="mealScenario">用餐情境</label>
-                <select id="mealScenario">
-                  <option value="normal">一般餐</option>
-                  <option value="set">套餐 / 多品項</option>
-                  <option value="counter">板前 / 無菜單</option>
-                  <option value="treat">放縱餐</option>
-                </select>
-              </div>
-              </details>
-
-              <div class="portion-buttons" aria-label="快速修正份量">
-                <button type="button" data-portion="0.7">小一點</button>
-                <button type="button" data-portion="1">差不多</button>
-                <button type="button" data-portion="1.3">大一點</button>
-              </div>
-
-              <button class="primary-action big-action" id="estimateButton" type="button">看這餐熱量</button>
-
-              <div class="ai-result" id="aiResult" hidden>
-                <p class="panel-label">這餐大約</p>
-                <div class="calorie-answer">
-                  <strong><span id="estimatedCalories">0</span></strong>
-                  <span>kcal</span>
-                </div>
-                <small class="food-label" id="foodLabel">辨識：餐點</small>
-                <div class="macro-row">
-                  <span>蛋白 <b id="proteinResult">0g</b></span>
-                  <span>碳水 <b id="carbResult">0g</b></span>
-                  <span>脂肪 <b id="fatResult">0g</b></span>
-                </div>
-                <div class="detected-list" id="detectedList"></div>
-                <div class="allergy-alert" id="allergyAlert" hidden></div>
-                <p id="estimateNote"></p>
-                <div class="next-meal-card">
-                  <p class="panel-label">現在怎麼調整</p>
-                  <p id="nextMealResult">加入紀錄後會更新下一餐建議。</p>
-                </div>
-                <div class="next-meal-card actual-card" id="actualCard" hidden>
-                  <p class="panel-label">吃完校正</p>
-                  <p id="actualNote">吃完後再拍一下，可估算實際攝取。</p>
-                </div>
-                <button class="secondary-action" type="submit">加入今日紀錄</button>
-              </div>
-            </form>
-          </div>
-        </section>
-
-        <section class="tab-panel" id="body" aria-label="我的身體">
-          <div class="body-grid">
-            <form class="settings-card" id="settingsForm">
-              <div class="section-head">
-                <div>
-                  <p class="eyebrow">Body & Goal</p>
-                  <h2>身高體重與減重目標</h2>
-                </div>
-              </div>
-              <div class="form-row four-col">
-                <div>
-                  <label for="heightCm">身高 cm</label>
-                  <input id="heightCm" type="number" min="120" max="230" step="1" />
-                </div>
-                <div>
-                  <label for="startWeight">目前體重 kg</label>
-                  <input id="startWeight" type="number" min="30" max="250" step="0.1" />
-                </div>
-                <div>
-                  <label for="age">年齡</label>
-                  <input id="age" type="number" min="12" max="100" step="1" />
-                </div>
-                <div>
-                  <label for="sex">生理性別</label>
-                  <select id="sex">
-                    <option value="male">男</option>
-                    <option value="female">女</option>
-                  </select>
-                </div>
-              </div>
-              <div class="form-row three-col">
-                <div>
-                  <label for="targetWeight">目標體重 kg</label>
-                  <input id="targetWeight" type="number" min="30" max="250" step="0.1" />
-                </div>
-                <div>
-                  <label for="deadline">目標日期</label>
-                  <input id="deadline" type="date" />
-                </div>
-                <div>
-                  <label for="activity">活動量</label>
-                  <select id="activity">
-                    <option value="1.2">久坐</option>
-                    <option value="1.375">輕量活動</option>
-                    <option value="1.55">中等活動</option>
-                    <option value="1.725">高活動</option>
-                  </select>
-                </div>
-              </div>
-              <div class="recommend-card">
-                <div>
-                  <p class="panel-label">系統建議每日熱量</p>
-                  <strong><span id="recommendedCalories">-</span> kcal</strong>
-                  <small id="bmiExplain">輸入身高體重後自動計算。</small>
-                </div>
-                <button class="text-action" id="applySuggestedCalories" type="button">套用建議</button>
-              </div>
-                <div class="form-row two-col">
-                <div>
-                  <label for="dailyTarget">每日熱量目標 kcal</label>
-                  <input id="dailyTarget" type="number" min="900" max="5000" step="50" />
-                </div>
-                <div>
-                  <label for="proteinTarget">蛋白質目標 g</label>
-                  <input id="proteinTarget" type="number" min="30" max="250" step="5" />
-                </div>
-              </div>
-              <button class="primary-action" type="submit">儲存我的目標</button>
-            </form>
-
-            <form class="settings-card" id="weightForm">
-              <div class="section-head">
-                <div>
-                  <p class="eyebrow">Check-in</p>
-                  <h2>今天量體重</h2>
-                </div>
-              </div>
-              <div class="form-row two-col">
-                <div>
-                  <label for="todayWeight">今日體重 kg</label>
-                  <input id="todayWeight" type="number" min="30" max="250" step="0.1" placeholder="例：78.5" />
-                  <div class="quick-counter" aria-label="快速調整今日體重">
-                    <button type="button" data-weight-delta="-0.5">-0.5</button>
-                    <button type="button" data-weight-delta="0.5">+0.5</button>
-                  </div>
-                </div>
-              </div>
-              <button class="secondary-action" type="submit">儲存體重</button>
-            </form>
-
-            <form class="settings-card" id="stepsForm">
-              <div class="section-head">
-                <div>
-                  <p class="eyebrow">Move</p>
-                  <h2>今天步數</h2>
-                </div>
-              </div>
-              <div class="form-row two-col">
-                <div>
-                  <label for="todaySteps">今日步數</label>
-                  <input id="todaySteps" type="number" min="0" max="80000" step="100" placeholder="例：11742" />
-                  <div class="steps-preset-row" aria-label="快速選擇今日步數">
-                    <button type="button" data-steps="3000">3,000</button>
-                    <button type="button" data-steps="6000">6,000</button>
-                    <button type="button" data-steps="12000">12,000</button>
-                  </div>
-                </div>
-                <div>
-                  <label for="stepTarget">步數目標</label>
-                  <input id="stepTarget" type="number" min="1000" max="30000" step="500" placeholder="例：8000" />
-                </div>
-              </div>
-              <button class="secondary-action" type="submit">儲存步數</button>
-              <small class="form-status" id="stepsStatus" hidden></small>
-            </form>
-          </div>
-          <div class="goal-card">
-            <p class="eyebrow">Goal Progress</p>
-            <h2><span id="currentWeightText">-</span> kg → <span id="targetWeightText">-</span> kg</h2>
-            <div class="progress-track"><span id="goalProgressBar"></span></div>
-            <p id="goalAdvice">設定目標後，這裡會顯示減重進度。</p>
-          </div>
-          <div class="meal-list weight-list" id="weightList"></div>
-        </section>
-
-        <section class="tab-panel" id="log" aria-label="飲食紀錄">
-          <div class="section-head">
-            <div>
-              <p class="eyebrow">Today Log</p>
-              <h2>今日飲食</h2>
-            </div>
-            <button class="text-action" id="clearToday" type="button">清空今日</button>
-          </div>
-          <div class="summary-strip">
-            <span>餐點 <b id="todayMeals">0</b></span>
-            <span>蛋白目標 <b id="proteinGoalText">90g</b></span>
-            <span>熱量目標 <b id="calorieGoalText">1800</b></span>
-          </div>
-          <p class="storage-note">文字紀錄會永久保存在這支手機；照片會存在本機，除非清除瀏覽器資料或刪除主畫面 App。</p>
-          <div class="meal-list" id="mealList"></div>
-        </section>
-
-        <section class="tab-panel" id="insight" aria-label="趨勢統計">
-          <div class="section-head">
-            <div>
-              <p class="eyebrow">7 / 30 Days</p>
-              <h2>熱量趨勢</h2>
-            </div>
-            <div class="segmented">
-              <button class="range-btn active" data-range="7" type="button">7日</button>
-              <button class="range-btn" data-range="30" type="button">30日</button>
-            </div>
-          </div>
-          <div class="chart" id="calorieChart"></div>
-          <div class="insight-grid">
-            <article>
-              <span id="avgCalories">0</span>
-              <small>平均熱量</small>
-            </article>
-            <article>
-              <span id="bestDay">-</span>
-              <small>最接近目標</small>
-            </article>
-            <article>
-              <span id="loggedDays">0</span>
-              <small>有紀錄天數</small>
-            </article>
-          </div>
-          <form class="settings-card gemini-card" id="geminiForm">
-            <div class="section-head">
-              <div>
-                <p class="eyebrow">Gemini Layout Coach</p>
-                <h2>請 Gemini 幫我們優化排版</h2>
-              </div>
-            </div>
-            <div class="form-row">
-              <label for="geminiPrompt">你想請 Gemini 看什麼？</label>
-              <textarea id="geminiPrompt" rows="4" placeholder="例：參考我給的獺獺 OtterFit 截圖，讓首頁更高級、拍照按鈕更明顯、日期區更好看。"></textarea>
-            </div>
-            <button class="secondary-action" id="askGeminiLayout" type="submit">送給 Gemini 分析</button>
-            <div class="gemini-output" id="geminiOutput" hidden></div>
-          </form>
-        </section>
-      </section>
-    </main>
-
-    <div class="mobile-action-bar">
-      <button class="mobile-camera-cta dark" id="mobileEstimateCTA" type="button">
-        <span aria-hidden="true">📸</span>
-        <b>拍照估熱量</b>
-      </button>
-      <button class="mobile-camera-cta" id="cameraCoachCTA" type="button">
-        <span aria-hidden="true">✏️</span>
-        <b>手動記餐</b>
-      </button>
-      <button class="mobile-camera-cta ghost" id="finalComboCTA" type="button">
-        <span aria-hidden="true">✅</span>
-        <b>合照校正</b>
-      </button>
+            <div id="loginErrorMsg" class="login-error-tip">❌ 帳號不存在或密碼錯誤，請重新輸入。</div>
+            <button class="btn-submit-login" onclick="executeSecureLogin()">驗證並登入</button>
+        </div>
     </div>
 
-    <script src="./app.js?v=49"></script>
-  </body>
+    <!-- 30秒極速文青 Onboarding 全螢幕 Wizard (修復 Bug 1 攔截) -->
+    <div id="onboardOverlay" class="onboard-overlay">
+        <div style="width:100%; max-width:420px; margin-bottom: 32px; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-family: var(--font-serif); font-size: 18px; font-weight: 700;">🦦 先讓獺獺認識你</span>
+            <span id="onboardStepBadge" style="font-size: 12px; color: var(--color-muted); font-weight: 600;">步驟 1 / 2</span>
+        </div>
+
+        <!-- 步驟一：陪伴偏好 -->
+        <div id="onboardScreen1" class="onboard-screen active">
+            <h3 style="font-family: var(--font-serif); font-size: 24px; font-weight: 700; margin-bottom: 8px;">你今天希望我怎麼陪你？</h3>
+            <p style="font-size: 13px; color: var(--color-muted); margin-bottom: 28px;">不用告訴我一堆宏大的誓言，先選個今天最舒服的相處頻率吧。</p>
+
+            <div class="onboard-card-click selected" onclick="selectOnboardTone(this, 'awareness')">
+                <div style="font-weight: 700; font-size: 14px;">☕ 輕鬆記錄就好</div>
+                <div style="font-size: 12px; color: var(--color-muted); margin-top: 4px;">只想大概知道吃了什麼，拒絕熱量微積分與焦慮。</div>
+            </div>
+            <div class="onboard-card-click" onclick="selectOnboardTone(this, 'balance')">
+                <div style="font-weight: 700; font-size: 14px;">🥗 慢慢吃出平衡</div>
+                <div style="font-size: 12px; color: var(--color-muted); margin-top: 4px;">希望能均衡一點，多聽些溫柔的餐盤替換小建議。</div>
+            </div>
+            <div class="onboard-card-click" onclick="selectOnboardTone(this, 'fitness')">
+                <div style="font-weight: 700; font-size: 14px;">💪 確實朝精實前進</div>
+                <div style="font-size: 12px; color: var(--color-muted); margin-top: 4px;">稍微認真一點點，請幫我盯緊蛋白質與活動赤字。</div>
+            </div>
+            <button class="btn-main-cta" style="width:100%; margin-top: 24px;" onclick="goToOnboardStep2()">下一步，調整體態數值</button>
+        </div>
+
+        <!-- 步驟二：身高體重目標設定 -->
+        <div id="onboardScreen2" class="onboard-screen">
+            <h3 style="font-family: var(--font-serif); font-size: 24px; font-weight: 700; margin-bottom: 4px;">初始身體狀態設定</h3>
+            <p style="font-size: 13px; color: var(--color-muted); margin-bottom: 24px;">拖動滑塊調整，大數據將即時幫你換算黃金基礎額度。</p>
+
+            <div class="form-group-box" style="padding:20px; margin-bottom:16px;">
+                <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700;">
+                    <span>📐 初始身高設定</span>
+                    <span style="font-family:'Inter'; color:var(--color-salmon-pink);"><span id="sliderHeightVal">170</span> cm</span>
+                </div>
+                <input type="range" min="140" max="200" value="170" class="range-slider-style" id="heightSlider" oninput="calculateOnboardBmi()">
+            </div>
+
+            <div class="form-group-box" style="padding:20px; margin-bottom:16px;">
+                <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700;">
+                    <span>⚖️ 當前體重紀錄</span>
+                    <span style="font-family:'Inter'; color:var(--color-salmon-pink);"><span id="sliderWeightVal">75.0</span> kg</span>
+                </div>
+                <input type="range" min="40" max="130" value="75" class="range-slider-style" id="weightSlider" oninput="calculateOnboardBmi()">
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:28px;">
+                <div style="background:#FFF; border:1px solid var(--color-border); padding:12px; border-radius:14px; text-align:center;">
+                    <div style="font-size:11px; color:var(--color-muted); font-weight:600;">預估換算 BMI</div>
+                    <div id="onboardBmiDisplay" style="font-family:'Inter'; font-size:20px; font-weight:800; margin-top:4px;">26.0</div>
+                </div>
+                <div style="background:#FFF; border:1px solid var(--color-border); padding:12px; border-radius:14px; text-align:center;">
+                    <div style="font-size:11px; color:var(--color-muted); font-weight:600;">剛剛好熱量額度</div>
+                    <div id="onboardKcalDisplay" style="font-family:'Inter'; font-size:20px; font-weight:800; margin-top:4px;">1750<span> kcal</span></div>
+                </div>
+            </div>
+            <button class="btn-main-cta" style="width:100%;" onclick="completeOnboardWorkflow()">採用建議並開始</button>
+        </div>
+    </div>
+
+    <!-- 非阻斷式成就 Toast 彈窗容器 -->
+    <div id="achievementToast" class="achievement-toast">
+        <span style="font-size: 24px;">🎉</span>
+        <div style="flex-grow:1;">
+            <div style="font-size: 13px; font-weight: 700;">完成一餐，獺獺幫你記好了</div>
+            <div style="font-size: 11px; color: var(--color-muted);">你正在形成自己的節奏。這一步，值得被記下來。</div>
+        </div>
+    </div>
+
+    <!-- 主應用介面容器 -->
+    <div class="app-container" id="mainAppContainer">
+        <header class="header">
+            <div class="brand-zone">
+                <span class="sub-title">Photo Calorie Coach</span>
+                <h1 class="main-title">OtterFit 獺獺</h1>
+            </div>
+            <div id="logoutBtn" class="user-status-tag" onclick="handleLogout()">測試員</div>
+        </header>
+
+        <section class="hero-section">
+            <div class="hero-layout">
+                <!-- 剩餘熱量圓環 (初始起步 20% 注入進度) -->
+                <div class="progress-container">
+                    <div class="progress-svg-box">
+                        <svg class="progress-svg" viewBox="0 0 120 120">
+                            <circle class="progress-circle-bg" cx="60" cy="60" r="53" />
+                            <circle id="progressCircle" class="progress-circle-bar" cx="60" cy="60" r="53" stroke-dasharray="333" stroke-dashoffset="266.4" />
+                        </svg>
+                        <div class="progress-text">
+                            <span id="caloriesLeftDisplay" class="number">1800</span>
+                            <span class="unit">KCAL 還能吃</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 巨型海獺吃番茄卡片 (戳擊觸發 Wobble 動畫與魔性台庫) -->
+                <div id="tomaAquarium" class="toma-hero-aquarium" onclick="triggerTomaPoke()">
+                    <div id="tomaGiantAvatar" class="toma-giant-avatar">🦦🍅</div>
+                    <span id="tomaStageBadge" class="toma-stage-badge">圓滾滾初心獺</span>
+                    <div id="tomaBubble" class="bubble-speech-zone">先記一餐就好。慢慢來，也會往前。</div>
+                </div>
+            </div>
+            <!-- 散步赤字加回動態說明 -->
+            <div id="exerciseSubText" class="progress-info-sub">已含今日步行消耗 +0 kcal</div>
+        </section>
+
+        <div id="exerciseAlert" class="status-alert-card success">健康小窩已完成 20%，只差你的第一餐照片囉。</div>
+
+        <!-- 功能 Tabs (純文字規範優化) -->
+        <nav class="tab-navigation">
+            <button class="tab-btn active" onclick="switchTab(this, 'tab-photo')">紀錄美食</button>
+            <button class="tab-btn" onclick="switchTab(this, 'tab-body')">我的身體</button>
+            <button class="tab-btn" onclick="switchTab(this, 'tab-diet')">飯友日記</button>
+        </nav>
+
+        <!-- PANEL A: 紀錄美食 -->
+        <div id="tab-photo" class="tab-panel active">
+            <div class="input-card-box">
+                <div class="select-title">快速選一餐</div>
+                <div class="meal-chip-grid">
+                    <button class="meal-chip" onclick="selectMealChip(this, '傳統排骨便當', 750, '中等', '充足', '偏高')">傳統排骨便當</button>
+                    <button class="meal-chip" onclick="selectMealChip(this, '清爽沙拉減脂餐', 320, '高', '極高', '低')">清爽沙拉減脂餐</button>
+                    <button class="meal-chip" onclick="selectMealChip(this, '精緻下午茶點', 540, '低', '缺乏', '偏高')">精緻下午茶點</button>
+                    <button class="meal-chip" onclick="selectMealChip(this, '超商國民便當', 620, '中等', '微量', '中等')">超商國民便當</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL B: 我的身體 (解耦隔離 State) -->
+        <div id="tab-body" class="tab-panel">
+            <div class="form-group-box">
+                <div class="form-title">今日體重紀錄 (點擊加減微調)</div>
+                <div class="counter-row">
+                    <button class="btn-counter-calc" onclick="adjustWeight(-0.5)">-</button>
+                    <span id="weightValueDisplay" class="counter-display-value">75.0 <span style="font-size:12px; color:var(--color-muted); font-weight:500;">kg</span></span>
+                    <button class="btn-counter-calc" onclick="adjustWeight(0.5)">+</button>
+                </div>
+            </div>
+            <div class="form-group-box">
+                <div class="form-title">今日生活小散步 (累積天數模擬快捷鍵)</div>
+                <div class="steps-preset-row">
+                    <button class="btn-preset-steps" onclick="selectPresetSteps(this, 4000, 3)">3天連續穩健</button>
+                    <button class="btn-preset-steps" onclick="selectPresetSteps(this, 7000, 7)">7天高效活力</button>
+                    <button class="btn-preset-steps" onclick="selectPresetSteps(this, 12000, 30)">30天精實極限</button>
+                </div>
+            </div>
+            <div class="form-group-box" style="border-color: var(--color-salmon-soft);">
+                <div class="form-title" style="color:var(--color-salmon-pink);">本機數據維護</div>
+                <div class="strategy-preset-grid">
+                    <button class="btn-strategy-sim" style="border-color:var(--color-salmon-pink); color:var(--color-salmon-pink);" onclick="triggerUndoableReset()">清空今日紀錄</button>
+                    <button id="undoBtn" class="btn-strategy-sim" style="background:var(--color-text); color:#FFF; display:none;" onclick="executeUndoAction()">↩️ 撤銷清空 (3秒內)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL C: 飯友日記歷史列表 -->
+        <div id="tab-diet" class="tab-panel">
+            <div id="dietHistory" class="history-list">
+                <div style="text-align: center; padding: 20px; color: var(--color-muted); font-size: 13px;">今天還沒有美食紀錄唷，隨手拍下第一餐吧。</div>
+            </div>
+        </div>
+
+        <!-- 四宮格數據指標 -->
+        <section class="data-grid">
+            <div class="data-card"><div class="title">今日已吃</div><div id="cardConsumed" class="value">0<span>kcal</span></div></div>
+            <div class="data-card"><div class="title">黃金體態 BMI</div><div id="cardBmi" class="value">26.0</div></div>
+            <div class="data-card"><div class="title">蛋白質</div><div id="cardProtein" class="value">0<span>g</span></div></div>
+            <div class="data-card"><div class="title">累積步數</div><div id="cardSteps" class="value">0<span>步</span></div></div>
+        </section>
+    </div>
+
+    <!-- 智慧結果分析彈窗 -->
+    <div id="estimateModal" class="modal-overlay">
+        <div class="modal-box">
+            <h3 style="font-family: var(--font-serif); font-size: 16px; margin-bottom: 8px;">JustRight 智慧餐盤分析</h3>
+            <div class="insight-row-box">
+                <div style="font-size: 11px; color: var(--color-muted); margin-bottom: 4px;">已成功加載分析項目：</div>
+                <div id="modalEchoText" style="font-weight: 700; color: var(--color-text);"></div>
+                <div class="insight-badge-flex">
+                    <div id="badgeProtein" class="insight-badge">蛋白質：--</div>
+                    <div id="badgeVeg" class="insight-badge">蔬菜量：--</div>
+                    <div id="badgeFat" class="insight-badge">油脂：--</div>
+                </div>
+            </div>
+            <p style="font-size: 14px; margin-bottom: 20px; text-align: right; font-weight: 700;">估算範圍：<span id="modalKcalText" style="font-family:'Inter'; font-size: 20px; color: var(--color-salmon-pink);">520</span> kcal</p>
+            <button class="btn-main-cta" style="height: 42px;" onclick="confirmAndStoreMeal()">確認，儲存這餐</button>
+        </div>
+    </div>
+
+    <div class="bottom-nav"><button class="btn-main-cta" onclick="triggerAIEstimate()">估算這餐熱量</button></div>
+
+    <!-- ==========================================
+       JavaScript 核心控制與「新舊用戶分流」中心
+       ========================================== -->
+    <script>
+        const VALID_USERS = ["Lynn", "Leia", "Andrew", "Sally"];
+        const SECURITY_PASS = "Toma2026!";
+
+        let currentUser = "";
+        let userData = { targetCalories: 1750, consumedCalories: 0, totalProtein: 0, currentWeight: 75.0, currentHeight: 170, currentSteps: 0, streakDays: 0, dietRecords: [], selectedTone: "awareness", onboardCompleted: false };
+
+        let undoSnapshot = null; let undoTimeoutTimer = null;
+        let selectedMealName = "現拍美食餐點大數據精準識別"; let selectedMealKcal = 520;
+        let selectedP = "中等"; let selectedV = "還不錯"; let selectedF = "正常";
+
+        const progressCircle = document.getElementById('progressCircle');
+        const caloriesLeftDisplay = document.getElementById('caloriesLeftDisplay');
+        const tomaGiantAvatar = document.getElementById('tomaGiantAvatar');
+        const tomaStageBadge = document.getElementById('tomaStageBadge');
+        const tomaBubble = document.getElementById('tomaBubble');
+
+        // 🦦🍅 海獺吃番茄原創隨機驚喜台詞庫
+        const pokeQuotes = [
+            { icon: "🦦🍅", text: "（嚼嚼）...這顆番茄甜度剛剛好。沒事，你忙你的，我只是在練核心。💪" },
+            { icon: "🍅💦", text: "被你發現了。我雖然看起來圓滾滾，但我的體脂其實很精實喔。" },
+            { icon: "🦦✨", text: "相機已就緒。你不用完美，我們只要比昨天更懂自己一點點。" },
+            { icon: "🦦🛌", text: "（躺平）...看起來在耍廢？沒關係，這是我默默變強的偽裝。" },
+            { icon: "🦦🔥", text: "你正在形成自己的節奏。今天少吃一口醬汁，明天我陪你多賺 3000 步。" }
+        ];
+
+        function executeSecureLogin() {
+            const userIn = document.getElementById('loginUsername').value.trim();
+            const passIn = document.getElementById('loginPassword').value.trim();
+            const errorEl = document.getElementById('loginErrorMsg');
+
+            if (VALID_USERS.includes(userIn) && passIn === SECURITY_PASS) {
+                errorEl.style.display = "none";
+                currentUser = userIn;
+                document.getElementById('loginOverlay').style.display = "none";
+
+                const savedData = localStorage.getItem(`otterfit_user_${userIn}`);
+                if (savedData) {
+                    userData = JSON.parse(savedData);
+                    if (userData.onboardCompleted) { enterMainApplication(); }
+                    else { launchOnboardWorkflow(); }
+                } else {
+                    launchOnboardWorkflow();
+                }
+            } else {
+                errorEl.style.display = "block";
+            }
+        }
+
+        function launchOnboardWorkflow() {
+            document.getElementById('onboardOverlay').style.display = "flex";
+            document.getElementById('onboardScreen1').classList.add('active');
+            document.getElementById('onboardScreen2').classList.remove('active');
+            document.getElementById('onboardStepBadge').innerText = "步驟 1 / 2";
+            calculateOnboardBmi();
+        }
+
+        function selectOnboardTone(btn, tone) {
+            document.querySelectorAll('.onboard-card-click').forEach(c => c.classList.remove('selected'));
+            btn.classList.add('selected');
+            userData.selectedTone = tone;
+        }
+
+        function goToOnboardStep2() {
+            document.getElementById('onboardScreen1').classList.remove('active');
+            document.getElementById('onboardScreen2').classList.add('active');
+            document.getElementById('onboardStepBadge').innerText = "步驟 2 / 2";
+        }
+
+        function calculateOnboardBmi() {
+            const h = parseFloat(document.getElementById('heightSlider').value);
+            const w = parseFloat(document.getElementById('weightSlider').value);
+
+            document.getElementById('sliderHeightVal').innerText = h;
+            document.getElementById('sliderWeightVal').innerText = w.toFixed(1);
+
+            const bmi = w / ((h/100) * (h/100));
+            document.getElementById('onboardBmiDisplay').innerText = bmi.toFixed(1);
+
+            let calcKcal = Math.round(10 * w + 6.25 * h - 5 * 25 + 5);
+            if (userData.selectedTone === 'awareness') calcKcal -= 100;
+            if (userData.selectedTone === 'fitness') calcKcal -= 250;
+
+            document.getElementById('onboardKcalDisplay').innerHTML = `${calcKcal}<span> kcal</span>`;
+
+            userData.currentHeight = h;
+            userData.currentWeight = w;
+            userData.targetCalories = calcKcal;
+        }
+
+        function completeOnboardWorkflow() {
+            userData.onboardCompleted = true;
+            userData.streakDays = 0;
+            saveToStorage();
+
+            document.getElementById('onboardOverlay').style.display = "none";
+            enterMainApplication();
+
+            document.getElementById('exerciseAlert').style.display = "block";
+            document.getElementById('exerciseAlert').innerHTML = `💡 <b>小窩初始進度：</b>健康小窩已完成 20%，只差你的第一餐照片囉。`;
+        }
+
+        function enterMainApplication() {
+            document.getElementById('mainAppContainer').style.display = "block";
+            document.getElementById('logoutBtn').innerText = `${currentUser} (登出)`;
+            document.getElementById('weightValueDisplay').innerHTML = `${userData.currentWeight.toFixed(1)} <span style="font-size:12px; color:var(--color-muted); font-weight:500;">kg</span>`;
+
+            document.getElementById('loginUsername').value = "";
+            document.getElementById('loginPassword').value = "";
+
+            updateUI(false);
+        }
+
+        function handleLogout() {
+            saveToStorage();
+            document.getElementById('mainAppContainer').style.display = "none";
+            document.getElementById('loginOverlay').style.display = "flex";
+        }
+
+        function saveToStorage() { if (currentUser) { localStorage.setItem(`otterfit_user_${currentUser}`, JSON.stringify(userData)); } }
+
+        // 🌟 修復 Bug 4：分頁平滑滾動自動置頂
+        function switchTab(btn, panelId) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+
+            const activePanel = document.getElementById(panelId);
+            activePanel.classList.add('active');
+            activePanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function selectMealChip(btn, name, kcal, p, v, f) {
+            document.querySelectorAll('.meal-chip').forEach(c => c.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedMealName = name; selectedMealKcal = kcal; selectedP = p; selectedV = v; selectedF = f;
+            tomaBubble.innerText = "已鎖定快選項目，點擊下方按鈕即可一鍵完成分析。";
+        }
+
+        function triggerAIEstimate() {
+            document.getElementById('modalEchoText').innerText = `"${selectedMealName}"`;
+            document.getElementById('modalKcalText').innerText = `${selectedMealKcal - 40} - ${selectedMealKcal + 40}`;
+            document.getElementById('badgeProtein').innerText = `蛋白質：${selectedP}`;
+            document.getElementById('badgeVeg').innerText = `蔬菜量：${selectedV}`;
+            document.getElementById('badgeFat').innerText = `油脂：${selectedF}`;
+            document.getElementById('estimateModal').style.display = "flex";
+        }
+
+        function confirmAndStoreMeal() {
+            document.getElementById('estimateModal').style.display = "none";
+            userData.consumedCalories += selectedMealKcal;
+            userData.totalProtein += selectedP === '高' || selectedP === '充足' ? 24 : 12;
+            userData.dietRecords.push({ name: selectedMealName, kcal: selectedMealKcal });
+            if(userData.streakDays === 0) userData.streakDays = 1;
+
+            document.getElementById('exerciseAlert').style.display = "block";
+            document.getElementById('exerciseAlert').innerHTML = `🎉 <b>Aha Moment：</b>第一餐記錄完成！能量已成功累進。`;
+
+            saveToStorage();
+            updateUI(true);
+
+            // 🌟 修復 Bug 2：成就彈窗解耦為 2.5 秒自動解扣 Toast 提示
+            const toast = document.getElementById('achievementToast');
+            toast.classList.add('active');
+            setTimeout(() => { toast.classList.remove('active'); }, 2500);
+
+            switchTab(document.querySelectorAll('.tab-btn')[2], 'tab-diet');
+        }
+
+        function adjustWeight(amount) {
+            userData.currentWeight += amount;
+            document.getElementById('weightValueDisplay').innerHTML = `${userData.currentWeight.toFixed(1)} <span style="font-size:12px; color:var(--color-muted); font-weight:500;">kg</span>`;
+            saveToStorage(); updateUI(false);
+        }
+
+        function selectPresetSteps(btn, steps, simulatedStreak) {
+            document.querySelectorAll('.btn-preset-steps').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            userData.currentSteps = steps;
+            userData.streakDays = simulatedStreak;
+            saveToStorage(); updateUI(false);
+        }
+
+        function triggerUndoableReset() {
+            undoSnapshot = JSON.stringify(userData);
+            userData.consumedCalories = 0; userData.totalProtein = 0; userData.currentSteps = 0; userData.dietRecords = [];
+            document.getElementById('exerciseAlert').style.display = "none";
+            updateUI(false);
+            document.getElementById('undoBtn').style.display = "block";
+            tomaBubble.innerText = "最近有點想偷懶…你回來我就有動力了。";
+            undoTimeoutTimer = setTimeout(() => { document.getElementById('undoBtn').style.display = "none"; undoSnapshot = null; saveToStorage(); }, 3000);
+        }
+
+        function executeUndoAction() {
+            if (undoSnapshot) {
+                clearTimeout(undoTimeoutTimer); userData = JSON.parse(undoSnapshot); undoSnapshot = null;
+                document.getElementById('undoBtn').style.display = "none"; updateUI(false);
+                tomaBubble.innerText = "已成功還原數據，剛剛差點就破壞水流了呢。";
+            }
+        }
+
+        function triggerTomaPoke() {
+            const aquariumEl = document.getElementById('tomaAquarium');
+            aquariumEl.classList.add('wobble-pop'); setTimeout(() => { aquariumEl.classList.remove('wobble-pop'); }, 450);
+            const randomQuote = pokeQuotes[Math.floor(Math.random() * pokeQuotes.length)];
+            tomaGiantAvatar.innerText = randomQuote.icon; tomaBubble.innerText = randomQuote.text;
+        }
+
+        function updateUI(isJustEaten) {
+            let burnKcal = Math.round(userData.currentSteps * 0.04);
+            let leftCalories = userData.targetCalories - userData.consumedCalories + burnKcal;
+            if (leftCalories < 0) leftCalories = 0;
+            let bmi = userData.currentWeight / ((userData.currentHeight/100) * (userData.currentHeight/100));
+
+            const subTextEl = document.getElementById('exerciseSubText');
+            if (userData.currentSteps > 0) { subTextEl.style.display = "block"; subTextEl.innerText = `已含今日步行消耗 +${burnKcal} kcal`; }
+            else { subTextEl.style.display = "none"; }
+
+            caloriesLeftDisplay.innerText = leftCalories;
+            let progressRatio = userData.consumedCalories / userData.targetCalories;
+            if (progressRatio > 0.8) progressRatio = 0.8;
+            const offset = 266.4 - (progressRatio * 333);
+            progressCircle.style.strokeDashoffset = offset;
+
+            document.getElementById('cardConsumed').innerHTML = `${userData.consumedCalories}<span>kcal</span>`;
+            document.getElementById('cardBmi').innerHTML = `${bmi.toFixed(1)}`;
+            document.getElementById('cardProtein').innerHTML = `${userData.totalProtein}<span>g</span>`;
+            document.getElementById('cardSteps').innerHTML = `${userData.currentSteps.toLocaleString()}<span>步</span>`;
+
+            // 4.1 進化長線：改為連續累積紀錄天數制狀態機
+            const streak = userData.streakDays;
+            if (streak >= 30) { tomaGiantAvatar.innerText = "👑🦦"; tomaStageBadge.innerText = "超精實水獺"; tomaBubble.innerText = "你真的把自己照顧得很好。獺獺也會陪你把這份狀態維持下去。"; }
+            else if (streak >= 14) { tomaGiantAvatar.innerText = "⚡🦦"; tomaStageBadge.innerText = "精實流線獺"; tomaBubble.innerText = "我們最近的節奏很穩，今天只要守住關鍵目標就很好。"; }
+            else if (streak >= 7) { tomaGiantAvatar.innerText = "💪🦦"; tomaStageBadge.innerText = "結實活力獺"; tomaBubble.innerText = "今天的目標完成得很漂亮。獺獺的手臂好像也更有力了。"; }
+            else if (streak >= 3) { tomaGiantAvatar.innerText = "🌅🦦"; tomaStageBadge.innerText = "微結實晨光獺"; tomaBubble.innerText = "我們已經建立初步記錄囉，獺獺覺得自己也變輕快了。"; }
+            else {
+                tomaGiantAvatar.innerText = "🦦🍅"; tomaStageBadge.innerText = "圓滾滾初心獺";
+                if (!isJustEaten) {
+                    if(userData.selectedTone === 'fitness') tomaBubble.innerText = `嗨 ${currentUser}，今天請盯緊活動赤字，我們一小步一小步前進。`;
+                    else tomaBubble.innerText = `你來啦 ${currentUser}。先說好，我不罵人，我只會幫你把吃的看懂。`;
+                }
+            }
+
+            // 🌟 修復 Bug 2：全繁體中文乾淨清洗，絕無英混雜字
+            const historyList = document.getElementById('dietHistory');
+            if (userData.dietRecords.length === 0) {
+                historyList.innerHTML = `<div style="text-align: center; padding: 20px; color: var(--color-muted); font-size: 13px;">今天還沒有美食紀錄唷，隨手拍下第一餐吧。</div>`;
+            } else {
+                historyList.innerHTML = userData.dietRecords.map(r => `<div class="history-item"><div style="font-weight:700;">${r.name}</div><div style="color: var(--color-salmon-pink); font-weight:800;">+${r.kcal} kcal</div></div>`).join('');
+            }
+        }
+    </script>
+</body>
 </html>

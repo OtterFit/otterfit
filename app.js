@@ -611,11 +611,24 @@
         }
 
         function getCurrentUser() { return currentUser; }
+        const APP_TIME_ZONE = "Asia/Taipei";
+        function getAppDateParts(date = new Date()) {
+            const parts = new Intl.DateTimeFormat('en-CA', {
+                timeZone: APP_TIME_ZONE,
+                year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit', hourCycle: 'h23'
+            }).formatToParts(date).reduce((result, part) => {
+                if (part.type !== 'literal') result[part.type] = part.value;
+                return result;
+            }, {});
+            return {
+                year: Number(parts.year), month: Number(parts.month), day: Number(parts.day),
+                hour: Number(parts.hour), minute: Number(parts.minute)
+            };
+        }
         function todayKeyDate(date = new Date()) {
-            const y = date.getFullYear();
-            const m = String(date.getMonth() + 1).padStart(2, '0');
-            const d = String(date.getDate()).padStart(2, '0');
-            return `${y}-${m}-${d}`;
+            const parts = getAppDateParts(date);
+            return `${parts.year}-${String(parts.month).padStart(2, '0')}-${String(parts.day).padStart(2, '0')}`;
         }
         function addDaysKey(days, date = new Date()) {
             const next = new Date(date);
@@ -2217,7 +2230,7 @@
         }
 
         function getNextMealSuggestion(date = new Date(), caloriesLeft = userData.targetCalories - userData.consumedCalories, statusOverride = null) {
-            const hour = date.getHours();
+            const hour = getAppDateParts(date).hour;
             let slot = "明日早餐";
             let time = "07:30-09:00";
             if (hour < 10) { slot = "午餐"; time = "12:00-13:30"; }
@@ -2379,7 +2392,7 @@
             const meals = Array.isArray(userData.dietRecords) ? userData.dietRecords : [];
             const hasMeals = meals.length > 0;
             const photoCount = meals.reduce((sum, meal) => sum + (meal.photoBefore ? 1 : 0) + (meal.photoAfter ? 1 : (meal.photo ? 1 : 0)), 0);
-            const todayLabel = new Date().toLocaleDateString('zh-TW', { month: '2-digit', day: '2-digit', weekday: 'short' });
+            const todayLabel = new Date().toLocaleDateString('zh-TW', { timeZone: APP_TIME_ZONE, month: '2-digit', day: '2-digit', weekday: 'short' });
             const calorieValue = status.caloriesOver > 0 ? `超 ${status.caloriesOver}` : `${status.caloriesLeft}`;
             const calorieUnit = status.caloriesOver > 0 ? "kcal" : "kcal";
             const gapText = priority?.reason || "今天節奏還穩";
@@ -3342,7 +3355,48 @@
             container.innerHTML = '';
         }
 
-        function getRecipeOptions(status = getNutritionStatus()) {
+        function getWellnessModeKey() {
+            return currentUser ? `paipachi:${currentUser}:wellnessMode` : "paipachi:guest:wellnessMode";
+        }
+
+        function getActiveWellnessMode() {
+            try { return localStorage.getItem(getWellnessModeKey()) || ""; }
+            catch (error) { return ""; }
+        }
+
+        function setActiveWellnessMode(mode = "") {
+            try { localStorage.setItem(getWellnessModeKey(), String(mode || "")); } catch (error) {}
+        }
+
+        function getWellnessRecipeOptions(mode = "") {
+            const plans = {
+                gentle: [
+                    { title: "南瓜魚片粥", query: "南瓜 魚片 粥 清淡 食譜", focus: "溫熱柔軟", body: "南瓜煮軟配白肉魚，少油少胡椒；青菜切細煮熟。" },
+                    { title: "蒸蛋豆腐炊飯", query: "蒸蛋 豆腐 炊飯 清淡 食譜", focus: "溫和蛋白質", body: "用蒸蛋與嫩豆腐補蛋白質，搭半碗軟飯和煮熟青菜。" },
+                    { title: "雞肉蔬菜麵線", query: "雞肉 蔬菜 麵線 清淡 食譜", focus: "清爽熱食", body: "雞肉去皮、蔬菜煮軟，湯頭清淡、不加辣與酸味醬料。" }
+                ],
+                daily: [
+                    { title: "鮭魚糙米蔬菜盤", query: "鮭魚 糙米 蔬菜 均衡 食譜", focus: "日常均衡", body: "一掌魚、半碗糙米與兩拳熟蔬菜，三大營養一次到位。" },
+                    { title: "雞肉豆腐菇菇鍋", query: "雞肉 豆腐 菇菇鍋 健康 食譜", focus: "原型食物", body: "雞肉與豆腐補蛋白，菇類和青菜增加食物多樣性。" },
+                    { title: "燕麥蛋蔬菜早餐", query: "燕麥 雞蛋 蔬菜 早餐 食譜", focus: "規律三餐", body: "燕麥配蛋與水果，簡單建立穩定早餐節奏。" }
+                ],
+                fiber: [
+                    { title: "地瓜雞肉熟蔬菜盤", query: "地瓜 雞肉 熟蔬菜 高纖 食譜", focus: "順暢纖維", body: "地瓜與兩拳熟蔬菜逐步補纖維，雞肉維持飽足。" },
+                    { title: "燕麥香蕉優格碗", query: "燕麥 香蕉 優格 高纖 食譜", focus: "早餐順暢", body: "燕麥、香蕉與無糖優格依耐受度搭配，並補一杯水。" },
+                    { title: "菇菇豆腐糙米飯", query: "菇菇 豆腐 糙米 高纖 食譜", focus: "全穀豆類", body: "糙米先半碗、菇菜加量；纖維循序增加，避免一下太多。" }
+                ],
+                period: [
+                    { title: "牛肉菠菜炊飯", query: "牛肉 菠菜 炊飯 經期 食譜", focus: "鐵與蛋白質", body: "瘦牛肉配菠菜與甜椒，搭含維生素 C 水果幫助鐵利用。" },
+                    { title: "鮭魚豆腐味噌湯", query: "鮭魚 豆腐 湯 經期 食譜", focus: "暖養熱食", body: "鮭魚與豆腐補蛋白質，湯頭減鹽、趁溫熱吃。" },
+                    { title: "雞蛋紅豆燕麥粥", query: "紅豆 燕麥 粥 雞蛋 食譜", focus: "溫熱飽足", body: "無糖紅豆燕麥粥搭雞蛋；若容易脹氣，紅豆份量減半。" }
+                ]
+            };
+            return plans[mode] || null;
+        }
+
+        function getRecipeOptions(status = getNutritionStatus(), wellnessMode = "") {
+            const wellnessOptions = getWellnessRecipeOptions(wellnessMode);
+            if (wellnessOptions) return wellnessOptions;
             if (status.sodiumOver > 0) {
                 return [
                     { title: "番茄豆腐雞肉湯", query: "番茄 豆腐 雞肉湯 低鈉 食譜", focus: "低鈉補蛋白", body: "用番茄、豆腐、雞肉撐味道，少鹽少醬，湯底不用喝完。" },
@@ -4622,10 +4676,14 @@
                 : mode === "analysis" ? "今日缺口分析"
                 : "塔塔三選一";
             const questionText = question || "等等吃什麼";
+            const mealCount = getStoredMealsForDate(todayKeyDate()).length;
+            const basisText = mealCount === 0
+                ? "今天還沒記錄餐點，先從一份蛋白質、熟蔬菜和適量主食開始；拍下第一餐後，塔塔再依實際內容調整。"
+                : `判斷依據：熱量剩 ${status.caloriesLeft} kcal、蛋白質缺 ${status.proteinGap}g、纖維缺 ${status.fiberGap}g、水分缺 ${status.waterGap}ml。優先處理：${priority.label}。`;
             card.classList.add('active');
             card.innerHTML = `
                 <strong>已收到：${questionText}，塔塔正在用「${modeText}」回答</strong>
-                <span>判斷依據：熱量剩 ${status.caloriesLeft} kcal、蛋白質缺 ${status.proteinGap}g、纖維缺 ${status.fiberGap}g、水分缺 ${status.waterGap}ml。優先處理：${priority.label}。真正熱量仍以飯前照片和份量校正。</span>
+                <span>${basisText} 真正熱量仍以飯前照片和份量校正。</span>
             `;
         }
 
@@ -4712,19 +4770,28 @@
             let shouldShowRecipeCards = false;
             let shouldShowNearbyCards = false;
             let answerMode = "analysis";
+            let requestedWellnessMode = "";
             if (/(養胃|溫和|胃不舒服|胃食道|胃酸|火燒心|反酸)/.test(question)) {
+                requestedWellnessMode = "gentle";
+                setActiveWellnessMode(requestedWellnessMode);
                 answer = `已切換成「溫和養胃」餐食方向。這是日常養身建議，不是疾病治療。這一餐優先選溫熱、柔軟、少油、少辣、少酸：蒸蛋或豆腐＋魚／雞肉＋粥、白飯或地瓜，再配煮軟青菜；先吃七分飽，飲料以溫水為主。${diagnosis.baseline}`;
                 shouldShowRecipeCards = true;
                 answerMode = "recipe";
             } else if (/(健胃|養身|養生|日常養身|日常養生)/.test(question)) {
+                requestedWellnessMode = "daily";
+                setActiveWellnessMode(requestedWellnessMode);
                 answer = `「日常養身」不是只吃清粥，而是讓三餐規律又有營養。今天用一掌心蛋白質、兩拳蔬菜、半到一拳原型主食，細嚼慢嚥；發酵乳品或豆製品可依自己的耐受度少量加入。${diagnosis.baseline}`;
                 shouldShowRecipeCards = true;
                 answerMode = "recipe";
             } else if (/(順暢|纖維|便秘|排便)/.test(question)) {
+                requestedWellnessMode = "fiber";
+                setActiveWellnessMode(requestedWellnessMode);
                 answer = `已切換成「順暢纖維」方向：這餐安排一份全穀或地瓜、兩拳熟蔬菜、一份水果，再把水分補足。纖維要逐步增加，若一下吃太多反而可能脹氣。今天纖維還差 ${status.fiberGap}g、水還差 ${status.waterGap}ml。`;
                 shouldShowRecipeCards = true;
                 answerMode = "recipe";
             } else if (/(經期|暖養|月經|生理期)/.test(question)) {
+                requestedWellnessMode = "period";
+                setActiveWellnessMode(requestedWellnessMode);
                 answer = `已切換成「經期暖養」方向：優先溫熱餐、足量蛋白質及含鐵食物，例如牛肉、魚、蛋、豆腐配深綠色蔬菜；搭配富含維生素 C 的水果。若容易水腫，湯汁與重鹹醬料減量。`;
                 shouldShowRecipeCards = true;
                 answerMode = "recipe";
@@ -4775,7 +4842,7 @@
                 renderTataDecisionCards(advice);
                 renderMealDecisionPathCard(status, advice);
             } else hideTataDecisionCards();
-            if (shouldShowRecipeCards) renderRecipeCards(getRecipeOptions(status));
+            if (shouldShowRecipeCards) renderRecipeCards(getRecipeOptions(status, requestedWellnessMode || getActiveWellnessMode()));
             else hideRecipeCards();
             if (shouldShowNearbyCards) requestNearbyRestaurants(advice);
             else hideNearbyRestaurantCards();
@@ -11513,7 +11580,7 @@
                 return { level: "caution", label: "少量觀察", reason: "可能偏油、偏鹹或湯汁較多，建議少醬、少湯、份量放小。", replacement: getGerdReplacement(text) };
             }
             if (safe.some(word => text.includes(word))) {
-                return { level: "safe", label: "相對友善", reason: "偏溫和、低刺激，較適合溫和養胃方向。", replacement: "" };
+                return { level: "safe", label: "相對友善", reason: "偏溫和、低刺激，較適合胃食道逆流模式。", replacement: "" };
             }
             return { level: "caution", label: "先少量", reason: "塔塔還不確定刺激程度，先用少油、少醬、七分飽處理。", replacement: "可改成清蒸魚、雞胸、豆腐、白粥、地瓜或燙青菜。" };
         }

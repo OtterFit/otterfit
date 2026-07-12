@@ -1,9 +1,15 @@
 {
-  "name": "toma-daily",
+  "name": "paipachi",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "smoke": "node scripts/paipachi-smoke-test.js",
+    "smoke:ui": "node scripts/paipachi-ui-smoke-test.js",
+    "smoke:bottom-nav": "node scripts/bottom-nav-hit-test.js",
+    "smoke:p4": "node scripts/p4-static-smoke-test.js",
+    "smoke:all": "node scripts/paipachi-ui-smoke-test.js && node scripts/paipachi-smoke-test.js",
+    "deploy:vercel": "vercel --prod"
   },
   "devDependencies": {
     "wrangler": "^4.95.0"

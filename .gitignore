@@ -11,3 +11,6 @@ cloudflared.exe
 .wrangler/
 .cache/
 coverage/
+.otterfit-data/
+
+.vercel

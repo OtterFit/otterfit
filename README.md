@@ -1,31 +1,66 @@
-# 獺獺 OtterFit
+﻿# paipachi ?箇
 
-拍照測熱量與體態管理 MVP。品牌方向改為水獺飯友：看起來在耍廢，其實在變強。
+paipachi ?舀?璈??憌脤??澈擃?憟蕭頩?Web App?敹?撽???找摯蝞??霈?憛雿輻??????敺???批銝憭拍????餈質馱瘞游??郊?詻?????蝻箏??
+## Current Test Build
 
-## 已有功能
+- App version: `paipachi-app-v214`
+- PWA cache: `paipachi-pwa-v214`
+- Local URL: http://localhost:8788/
+- Vercel production: https://paipachi.vercel.app/
 
-- 拍照測熱量：支援餐點照片上傳與補充描述。
-- BMI：身高、體重、BMI 分類。
-- 每日熱量建議：依身高、體重、年齡、性別、活動量、目標體重與期限估算。
-- 下一餐建議：依今日已吃熱量、蛋白質、碳水、脂肪給均衡飲食建議。
-- 飲食紀錄：今日餐點、熱量、蛋白質、碳水、脂肪。
-- 體重與步數紀錄：體重、每日步數、減重進度。
-- 趨勢統計：7 日 / 30 日熱量趨勢。
-- 日本旅行可用：內建拉麵、丼飯、壽司、唐揚雞、飯糰、日式便當、天婦羅、咖哩、蕎麥/烏龍麵、章魚燒等常見餐點估算。
+## Core Features
 
-## 手機使用
+- Passwordless beta login by account name.
+- First-use onboarding for goal, height, weight, and target calories.
+- Account-scoped profile persistence, so height and weight do not reset after browser changes when the same account is used.
+- Before-meal photo estimate and optional after-meal photo comparison.
+- Today album with date, meal slots, photos, calories, macros, and next-meal advice.
+- Text-assisted calorie estimate for soups, drinks, rice, bento, fried rice, and common meals.
+- Daily nutrition status for protein, fiber, water, sugar, sodium, and calories.
+- Water tracking and automatic step estimate while the phone page is open.
+- TATA growth/state system that reacts to healthier or heavier eating patterns.
 
-目前手機同 Wi-Fi 可用網址：
+## Smoke Tests
 
-```text
-http://10.0.0.108:8788/index.html
+Use the bundled Node runtime on this machine:
+
+```powershell
+& 'C:\Users\krake\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' .\scripts\paipachi-smoke-test.js
 ```
 
-用 iPhone Safari 開啟後，可用「分享」→「加入主畫面」。
+```powershell
+& 'C:\Users\krake\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' .\scripts\paipachi-ui-smoke-test.js
+```
 
-## 下一步
+```powershell
+node .\scripts\p4-static-smoke-test.js
+```
 
-1. 部署到公開 HTTPS 網址，手機離開同 Wi-Fi 也能用。
-2. 串接真正 AI Vision 圖片辨識 API。
-3. 用 Capacitor 包成 iOS App。
-4. 透過 Apple Developer 帳號上 TestFlight / App Store。
+## Vercel Deployment
+
+This build includes `vercel.json` for SPA refresh support, long-lived cache headers for `app.js` and `styles.css`, and no-cache headers for `index.html` and `sw.js`.
+
+```powershell
+npm i -g vercel
+vercel login
+vercel --prod
+```
+
+After deployment, verify:
+
+- The production URL opens on mobile: https://paipachi.vercel.app/
+- Refreshing nested routes falls back to `index.html`.
+- `styles.css?v=214` and `app.js?v=214` are served with immutable cache headers.
+- `sw.js` updates without stale caching.
+
+Public tunnel UI smoke:
+
+```powershell
+$env:paipachi_BASE_URL='https://agency-drawings-hero-push.trycloudflare.com'; & 'C:\Users\krake\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' .\scripts\paipachi-ui-smoke-test.js
+```
+
+## Reference Docs
+
+- `paipachi_V41_TEST_NOTES.md`: current test checklist.
+- `NUTRITION_GUIDELINES.md`: nutrition baselines and official sources used by the app.
+- `PRODUCT_ROADMAP.md`: product direction, milestones, and acceptance criteria.

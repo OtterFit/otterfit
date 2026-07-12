@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = "paipachi-pwa-v215";
+﻿const CACHE_NAME = "paipachi-pwa-v216";
 const ASSETS = ["./", "./index.html", "./styles.css", "./app.js", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 const STATIC_EXTENSIONS = [".html", ".css", ".js", ".webmanifest", ".svg", ".png", ".jpg", ".jpeg"];
 

@@ -1,4 +1,4 @@
-        const APP_VERSION = "paipachi-app-v215";
+        const APP_VERSION = "paipachi-app-v216";
         const VALID_USERS = ["001", "002", "003", "004", "005", "006", "007", "008", "009", "010", "Lynn", "Leia", "Andrew", "Sally"];
         const DAILY_GUIDELINES = {
             fiberG: 28,
@@ -335,6 +335,31 @@
             return "瘦身控卡";
         }
 
+        function isBetaTesterAccount(username = currentUser) {
+            const normalized = String(username || "").trim().toLowerCase();
+            return VALID_USERS.some(name => String(name).toLowerCase() === normalized);
+        }
+
+        function ensureBetaTesterProfile(username = currentUser) {
+            if (!username || !isBetaTesterAccount(username) || isOnboardingDone(username)) return false;
+            userData = {
+                ...createDefaultUserData(),
+                ...userData,
+                onboardCompleted: true,
+                selectedTone: userData.selectedTone || "slim",
+                targetCalories: Number(userData.targetCalories || 1750),
+                currentHeight: Number(userData.currentHeight || 170),
+                currentWeight: Number(userData.currentWeight || 75),
+                accountWeightKg: Number(userData.accountWeightKg || userData.currentWeight || 75)
+            };
+            localStorage.setItem(`paipachi:${username}:onboardingDone`, "true");
+            localStorage.setItem(`paipachi:${username}:calorieTarget`, String(userData.targetCalories));
+            localStorage.setItem(`paipachi:${username}:calorieGoal`, userData.selectedTone);
+            localStorage.setItem(`paipachi:${username}:profile`, JSON.stringify(getAccountProfileSnapshot()));
+            localStorage.setItem(`paipachi_user_${username}`, JSON.stringify(userData));
+            return true;
+        }
+
         function renderProfileSyncCard(source = "local") {
             const textEl = document.getElementById('profileSyncText');
             const pillEl = document.getElementById('profileSyncPill');
@@ -664,6 +689,9 @@
             if (isOnboardingDone(username)) {
                 userData.onboardCompleted = true;
                 localStorage.setItem(`paipachi:${username}:onboardingDone`, 'true');
+            }
+            if (ensureBetaTesterProfile(username)) {
+                saveRemoteUserProfile().catch(error => console.warn('Beta tester profile save failed', error));
             }
         }
 

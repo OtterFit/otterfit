@@ -16,10 +16,10 @@ function includes(source, fragment, label) {
   assert.ok(source.includes(fragment), `${label}: missing ${fragment}`);
 }
 
-includes(app, 'const APP_VERSION = "paipachi-app-v215"', "app version");
-includes(sw, 'const CACHE_NAME = "paipachi-pwa-v215"', "service worker cache");
-includes(index, "./styles.css?v=215", "stylesheet cache buster");
-includes(index, "./app.js?v=215", "script cache buster");
+includes(app, 'const APP_VERSION = "paipachi-app-v216"', "app version");
+includes(sw, 'const CACHE_NAME = "paipachi-pwa-v216"', "service worker cache");
+includes(index, "./styles.css?v=216", "stylesheet cache buster");
+includes(index, "./app.js?v=216", "script cache buster");
 includes(index, 'theme-color" content="#FFFDF7"', "theme color");
 includes(index, "<title>拍拍吃 | 你的照片營養師</title>", "branded page title");
 includes(index, '<span class="sub-title">你的照片營養師</span>', "branded subtitle");

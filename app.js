@@ -1,4 +1,4 @@
-        const APP_VERSION = "paipachi-app-v216";
+        const APP_VERSION = "paipachi-app-v217";
         const VALID_USERS = ["001", "002", "003", "004", "005", "006", "007", "008", "009", "010", "Lynn", "Leia", "Andrew", "Sally"];
         const DAILY_GUIDELINES = {
             fiberG: 28,
@@ -312,6 +312,7 @@
             localStorage.setItem(`paipachi:${currentUser}:calorieTarget`, String(userData.targetCalories));
             localStorage.setItem(`paipachi:${currentUser}:calorieGoal`, userData.selectedTone);
             localStorage.setItem(`paipachi:${currentUser}:profile`, JSON.stringify(getAccountProfileSnapshot()));
+            rememberBodyMeasurements();
         }
 
         function getAccountProfileSnapshot() {
@@ -325,6 +326,39 @@
                 profileVersion: 2,
                 updatedAt: new Date().toISOString()
             };
+        }
+
+        function readStoredNumber(key) {
+            const value = Number(localStorage.getItem(key));
+            return Number.isFinite(value) ? value : null;
+        }
+
+        function rememberBodyMeasurements(username = currentUser) {
+            if (!username) return;
+            const height = Number(userData.currentHeight);
+            const weight = Number(userData.currentWeight);
+            if (Number.isFinite(height) && height >= 120 && height <= 230) {
+                localStorage.setItem(`paipachi:${username}:lastHeightCm`, String(Math.round(height)));
+            }
+            if (Number.isFinite(weight) && weight >= 30 && weight <= 250) {
+                localStorage.setItem(`paipachi:${username}:lastWeightKg`, weight.toFixed(1));
+            }
+        }
+
+        function restoreBodyMeasurements(username = currentUser) {
+            if (!username) return;
+            const lastHeight = readStoredNumber(`paipachi:${username}:lastHeightCm`);
+            if (lastHeight !== null && lastHeight >= 120 && lastHeight <= 230) {
+                userData.currentHeight = Math.round(lastHeight);
+            }
+
+            const todayWeight = readStoredNumber(`paipachi:${username}:weight:${todayKeyDate()}`);
+            const lastWeight = readStoredNumber(`paipachi:${username}:lastWeightKg`);
+            const accountWeight = Number(userData.accountWeightKg || 0);
+            const nextWeight = [todayWeight, lastWeight, userData.currentWeight, accountWeight]
+                .map(Number)
+                .find(value => Number.isFinite(value) && value >= 30 && value <= 250);
+            if (nextWeight) userData.currentWeight = Math.round(nextWeight * 10) / 10;
         }
 
         function getGoalLabel(goal = userData.selectedTone) {
@@ -706,6 +740,7 @@
             if (ensureBetaTesterProfile(username)) {
                 saveRemoteUserProfile().catch(error => console.warn('Beta tester profile save failed', error));
             }
+            restoreBodyMeasurements(username);
         }
 
         function isValidUsername(username) {
@@ -1314,6 +1349,7 @@
             if (!Number.isNaN(savedSteps)) userData.currentSteps = savedSteps;
             const savedWater = parseInt(localStorage.getItem(dailyKey('water')) || '', 10);
             userData.waterMl = Number.isNaN(savedWater) ? 0 : Math.max(0, savedWater);
+            restoreBodyMeasurements(currentUser);
 
             updateStepDisplay(userData.currentSteps);
             pendingBeforeMeal = safeJsonObject(localStorage.getItem(dailyKey('pendingBeforeMeal')));

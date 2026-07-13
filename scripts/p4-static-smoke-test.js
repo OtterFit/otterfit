@@ -16,16 +16,22 @@ function includes(source, fragment, label) {
   assert.ok(source.includes(fragment), `${label}: missing ${fragment}`);
 }
 
-includes(app, 'const APP_VERSION = "paipachi-app-v217"', "app version");
-includes(sw, 'const CACHE_NAME = "paipachi-pwa-v217"', "service worker cache");
-includes(index, "./styles.css?v=217", "stylesheet cache buster");
-includes(index, "./app.js?v=217", "script cache buster");
-includes(app, 'const APP_TIME_ZONE = "Asia/Taipei"', "Taipei date handling");
-includes(app, 'function getWellnessRecipeOptions', "wellness-specific recipes");
+includes(app, 'const APP_VERSION = "paipachi-app-v219"', "app version");
+includes(sw, 'const CACHE_NAME = "paipachi-pwa-v219"', "service worker cache");
+includes(index, "./styles.css?v=219", "stylesheet cache buster");
+includes(index, "./app.js?v=219", "script cache buster");
+includes(app, 'function ensureFixedTesterProfile', "persistent tester profiles");
+includes(app, 'lastKnownWeight', "last known weight persistence");
+includes(app, 'accountHeight', "account height persistence");
 includes(app, 'function rememberBodyMeasurements', "body measurement persistence");
 includes(app, 'function restoreBodyMeasurements', "body measurement restoration");
 includes(app, 'lastWeightKg', "last weight fallback");
 includes(app, 'lastHeightCm', "last height fallback");
+includes(app, 'function previewLoginState', "login state preview");
+includes(app, 'function renderReturningWelcomeCard', "returning user welcome");
+includes(index, 'id="returningWelcomeCard"', "returning user card");
+includes(app, 'const APP_TIME_ZONE = "Asia/Taipei"', "Taipei date handling");
+includes(app, 'function getWellnessRecipeOptions', "wellness-specific recipes");
 includes(index, "溫和養胃", "wellness mode chip");
 includes(app, "日常養身建議，不是疾病治療", "wellness positioning");
 includes(index, 'theme-color" content="#FFFDF7"', "theme color");

@@ -1,4 +1,4 @@
-        const APP_VERSION = "paipachi-app-v217";
+        const APP_VERSION = "paipachi-app-v219";
         const VALID_USERS = ["001", "002", "003", "004", "005", "006", "007", "008", "009", "010", "Lynn", "Leia", "Andrew", "Sally"];
         const DAILY_GUIDELINES = {
             fiberG: 28,
@@ -41,10 +41,40 @@
         }
 
         let currentUser = "";
+        let currentLoginExperience = "first";
         function createDefaultUserData() {
             return { targetCalories: 1750, consumedCalories: 0, totalProtein: 0, totalFiber: 0, waterMl: 0, currentWeight: 75.0, accountWeightKg: 75.0, currentHeight: 170, currentSteps: 0, streakDays: 0, dietRecords: [], selectedTone: "slim", onboardCompleted: false };
         }
         let userData = createDefaultUserData();
+
+        function hasReturningAccountData(username) {
+            const name = String(username || "");
+            if (!name) return false;
+            return localStorage.getItem(`paipachi:${name}:onboardingDone`) === 'true'
+                || Boolean(localStorage.getItem(`paipachi:${name}:profile`))
+                || Boolean(localStorage.getItem(`paipachi_user_${name}`))
+                || isFixedTesterAccount(name);
+        }
+
+        function previewLoginState() {
+            const input = document.getElementById('loginUsername');
+            const hint = document.getElementById('loginAccountHint');
+            if (!input || !hint) return;
+            const raw = input.value.trim();
+            const username = VALID_USERS.find(name => name.toLowerCase() === raw.toLowerCase()) || raw;
+            hint.classList.remove('returning', 'first');
+            if (!username) {
+                hint.innerText = "輸入帳號後，塔塔會告訴你是首次設定或繼續使用。";
+                return;
+            }
+            if (hasReturningAccountData(username)) {
+                hint.classList.add('returning');
+                hint.innerText = "歡迎回來｜已找到這個帳號的身高、體重、目標與飲食紀錄，登入後會接著使用。";
+            } else {
+                hint.classList.add('first');
+                hint.innerText = "第一次使用｜登入後會先完成目標與初始身高體重設定，只需要設定一次。";
+            }
+        }
 
         let undoSnapshot = null; let undoTimeoutTimer = null;
         let selectedMeal = { name: "照片餐點估算", calories: 520, protein: 22, carbs: 58, fat: 18, fiber: 0, sugar: 0, sodium: 0, mealQuality: "unknown", healthFlags: [], items: [], photo: "", source: "photo_estimate", aiResult: null, corrected: false, warning: "" };
@@ -104,12 +134,13 @@
 
             if (isValidUsername(userIn)) {
                 errorEl.style.display = "none";
+                currentLoginExperience = hasReturningAccountData(userIn) ? "returning" : "first";
                 currentUser = userIn;
                 localStorage.setItem('paipachi:currentUser', currentUser);
                 document.getElementById('loginOverlay').style.display = "none";
 
                 await loadUserProfile(currentUser);
-                if (isOnboardingDone(currentUser)) { enterMainApplication(); }
+                if (isOnboardingDone(currentUser)) { enterMainApplication(currentLoginExperience); }
                 else { launchOnboardWorkflow(); }
             } else {
                 errorEl.style.display = "block";
@@ -254,7 +285,64 @@
             openPhotoPicker('before');
         }
 
-        function enterMainApplication() {
+        function getReturningAccountSnapshot(username = currentUser) {
+            const prefix = `paipachi:${username}:meals:`;
+            let mealCount = 0;
+            let recordedDays = 0;
+            for (let index = 0; index < localStorage.length; index += 1) {
+                const key = localStorage.key(index) || "";
+                if (!key.startsWith(prefix)) continue;
+                const meals = safeJsonArray(localStorage.getItem(key));
+                if (meals.length) recordedDays += 1;
+                mealCount += meals.length;
+            }
+            const lastActiveRaw = localStorage.getItem(`paipachi:${username}:lastActive`) || "";
+            const lastActive = lastActiveRaw ? new Date(lastActiveRaw) : null;
+            const lastLabel = lastActive && Number.isFinite(lastActive.getTime())
+                ? lastActive.toLocaleDateString('zh-TW', { timeZone: APP_TIME_ZONE, month: 'numeric', day: 'numeric' })
+                : "第一次開始記錄";
+            return {
+                mealCount,
+                recordedDays,
+                lastLabel,
+                height: Math.round(Number(userData.currentHeight || 170)),
+                weight: Number(userData.currentWeight || userData.accountWeightKg || 75).toFixed(1),
+                goal: getGoalLabel()
+            };
+        }
+
+        function renderReturningWelcomeCard(experience = currentLoginExperience) {
+            const card = document.getElementById('returningWelcomeCard');
+            if (!card) return;
+            if (experience !== "returning") {
+                card.classList.remove('active');
+                card.innerHTML = "";
+                return;
+            }
+            const snapshot = getReturningAccountSnapshot();
+            card.classList.add('active');
+            card.innerHTML = `
+                <div class="returning-welcome-top">
+                    <div><div class="returning-welcome-kicker">帳號紀錄已接回</div><div class="returning-welcome-title">${currentUser}，歡迎回來</div></div>
+                    <button class="returning-welcome-close" type="button" aria-label="關閉歡迎摘要" onclick="dismissReturningWelcome()">×</button>
+                </div>
+                <div class="returning-welcome-body">上次使用：${snapshot.lastLabel}。塔塔已讀回你的體態與飲食紀錄，今天可以直接接著拍，不必重新設定。</div>
+                <div class="returning-welcome-grid">
+                    <div class="returning-welcome-stat"><strong>${snapshot.height} cm</strong><span>保存身高</span></div>
+                    <div class="returning-welcome-stat"><strong>${snapshot.weight} kg</strong><span>最近體重</span></div>
+                    <div class="returning-welcome-stat"><strong>${snapshot.mealCount} 餐</strong><span>${snapshot.recordedDays} 個記錄日</span></div>
+                </div>
+                <div class="returning-welcome-body">目前方向：${snapshot.goal}</div>
+                <div class="returning-welcome-actions"><button type="button" onclick="dismissReturningWelcome()">看看今天</button><button class="primary" type="button" onclick="dismissReturningWelcome(); openPhotoSourceSheet('before')">直接拍一餐</button></div>
+            `;
+        }
+
+        function dismissReturningWelcome() {
+            const card = document.getElementById('returningWelcomeCard');
+            if (card) card.classList.remove('active');
+        }
+
+        function enterMainApplication(experience = currentLoginExperience) {
             document.getElementById('mainAppContainer').style.display = "block";
             document.getElementById('bottomNav').style.display = "grid";
             document.getElementById('logoutBtn').innerText = `${currentUser} (登出)`;
@@ -283,6 +371,7 @@
             checkOtterDecay();
             markActive();
             updateUI(false);
+            renderReturningWelcomeCard(experience);
             renderP3WeeklyReportCard();
             renderProfileSyncCard("local");
             startAutomaticStepCounter();
@@ -311,6 +400,8 @@
             if (!currentUser) return;
             localStorage.setItem(`paipachi:${currentUser}:calorieTarget`, String(userData.targetCalories));
             localStorage.setItem(`paipachi:${currentUser}:calorieGoal`, userData.selectedTone);
+            localStorage.setItem(`paipachi:${currentUser}:accountHeight`, String(Math.round(Number(userData.currentHeight || 170))));
+            localStorage.setItem(`paipachi:${currentUser}:lastKnownWeight`, Number(userData.currentWeight || userData.accountWeightKg || 75).toFixed(1));
             localStorage.setItem(`paipachi:${currentUser}:profile`, JSON.stringify(getAccountProfileSnapshot()));
             rememberBodyMeasurements();
         }
@@ -338,22 +429,30 @@
             const height = Number(userData.currentHeight);
             const weight = Number(userData.currentWeight);
             if (Number.isFinite(height) && height >= 120 && height <= 230) {
-                localStorage.setItem(`paipachi:${username}:lastHeightCm`, String(Math.round(height)));
+                const roundedHeight = String(Math.round(height));
+                localStorage.setItem(`paipachi:${username}:accountHeight`, roundedHeight);
+                localStorage.setItem(`paipachi:${username}:lastHeightCm`, roundedHeight);
             }
             if (Number.isFinite(weight) && weight >= 30 && weight <= 250) {
-                localStorage.setItem(`paipachi:${username}:lastWeightKg`, weight.toFixed(1));
+                const roundedWeight = weight.toFixed(1);
+                localStorage.setItem(`paipachi:${username}:lastKnownWeight`, roundedWeight);
+                localStorage.setItem(`paipachi:${username}:lastWeightKg`, roundedWeight);
             }
         }
 
         function restoreBodyMeasurements(username = currentUser) {
             if (!username) return;
-            const lastHeight = readStoredNumber(`paipachi:${username}:lastHeightCm`);
-            if (lastHeight !== null && lastHeight >= 120 && lastHeight <= 230) {
-                userData.currentHeight = Math.round(lastHeight);
-            }
+            const lastHeight = [
+                readStoredNumber(`paipachi:${username}:lastHeightCm`),
+                readStoredNumber(`paipachi:${username}:accountHeight`)
+            ].find(value => Number.isFinite(value) && value >= 120 && value <= 230);
+            if (lastHeight) userData.currentHeight = Math.round(lastHeight);
 
             const todayWeight = readStoredNumber(`paipachi:${username}:weight:${todayKeyDate()}`);
-            const lastWeight = readStoredNumber(`paipachi:${username}:lastWeightKg`);
+            const lastWeight = [
+                readStoredNumber(`paipachi:${username}:lastWeightKg`),
+                readStoredNumber(`paipachi:${username}:lastKnownWeight`)
+            ].find(value => Number.isFinite(value) && value >= 30 && value <= 250);
             const accountWeight = Number(userData.accountWeightKg || 0);
             const nextWeight = [todayWeight, lastWeight, userData.currentWeight, accountWeight]
                 .map(Number)
@@ -367,31 +466,6 @@
             if (goal === "healthy") return "健康飲食";
             if (goal === "gain") return "健康增重";
             return "瘦身控卡";
-        }
-
-        function isBetaTesterAccount(username = currentUser) {
-            const normalized = String(username || "").trim().toLowerCase();
-            return VALID_USERS.some(name => String(name).toLowerCase() === normalized);
-        }
-
-        function ensureBetaTesterProfile(username = currentUser) {
-            if (!username || !isBetaTesterAccount(username) || isOnboardingDone(username)) return false;
-            userData = {
-                ...createDefaultUserData(),
-                ...userData,
-                onboardCompleted: true,
-                selectedTone: userData.selectedTone || "slim",
-                targetCalories: Number(userData.targetCalories || 1750),
-                currentHeight: Number(userData.currentHeight || 170),
-                currentWeight: Number(userData.currentWeight || 75),
-                accountWeightKg: Number(userData.accountWeightKg || userData.currentWeight || 75)
-            };
-            localStorage.setItem(`paipachi:${username}:onboardingDone`, "true");
-            localStorage.setItem(`paipachi:${username}:calorieTarget`, String(userData.targetCalories));
-            localStorage.setItem(`paipachi:${username}:calorieGoal`, userData.selectedTone);
-            localStorage.setItem(`paipachi:${username}:profile`, JSON.stringify(getAccountProfileSnapshot()));
-            localStorage.setItem(`paipachi_user_${username}`, JSON.stringify(userData));
-            return true;
         }
 
         function renderProfileSyncCard(source = "local") {
@@ -670,7 +744,49 @@
             return todayKeyDate(next);
         }
         function dailyKey(feature, date = todayKeyDate()) { return `paipachi:${currentUser}:${feature}:${date}`; }
+        function isFixedTesterAccount(username) {
+            return /^(00[1-9]|010)$/.test(String(username || ""));
+        }
+
+        function ensureFixedTesterProfile(username) {
+            if (!isFixedTesterAccount(username)) return false;
+            const doneKey = `paipachi:${username}:onboardingDone`;
+            const profileKey = `paipachi:${username}:profile`;
+            const targetKey = `paipachi:${username}:calorieTarget`;
+            const goalKey = `paipachi:${username}:calorieGoal`;
+            const userKey = `paipachi_user_${username}`;
+            const existingProfile = safeJsonObject(localStorage.getItem(profileKey));
+            const existingUser = safeJsonObject(localStorage.getItem(userKey));
+            if (!existingProfile) {
+                const profile = {
+                    heightCm: Number(existingUser?.currentHeight || 170),
+                    weightKg: Number(existingUser?.accountWeightKg || existingUser?.currentWeight || 75),
+                    goal: existingUser?.selectedTone || "healthy",
+                    calorieTarget: Number(existingUser?.targetCalories || 1750),
+                    onboardingDone: true,
+                    profileVersion: 3,
+                    fixedTester: true,
+                    updatedAt: new Date().toISOString()
+                };
+                localStorage.setItem(profileKey, JSON.stringify(profile));
+                localStorage.setItem(targetKey, String(profile.calorieTarget));
+                localStorage.setItem(goalKey, profile.goal);
+                localStorage.setItem(userKey, JSON.stringify({
+                    ...createDefaultUserData(),
+                    currentHeight: profile.heightCm,
+                    currentWeight: profile.weightKg,
+                    accountWeightKg: profile.weightKg,
+                    targetCalories: profile.calorieTarget,
+                    selectedTone: profile.goal,
+                    onboardCompleted: true
+                }));
+            }
+            localStorage.setItem(doneKey, 'true');
+            return true;
+        }
+
         async function loadUserProfile(username) {
+            ensureFixedTesterProfile(username);
             const savedData = localStorage.getItem(`paipachi_user_${username}`);
             userData = createDefaultUserData();
             if (savedData) {
@@ -705,6 +821,10 @@
             if (savedGoal) userData.selectedTone = savedGoal;
             const savedTarget = Number(localStorage.getItem(`paipachi:${username}:calorieTarget`));
             if (Number.isFinite(savedTarget) && savedTarget > 0) userData.targetCalories = savedTarget;
+            const savedHeight = Number(localStorage.getItem(`paipachi:${username}:accountHeight`));
+            if (Number.isFinite(savedHeight) && savedHeight >= 120 && savedHeight <= 230) userData.currentHeight = savedHeight;
+            const lastKnownWeight = Number(localStorage.getItem(`paipachi:${username}:lastKnownWeight`));
+            if (Number.isFinite(lastKnownWeight) && lastKnownWeight >= 30 && lastKnownWeight <= 250) userData.currentWeight = lastKnownWeight;
 
             try {
                 const response = await fetch(`/api/user-profile?username=${encodeURIComponent(username)}`, { cache: 'no-store' });
@@ -737,9 +857,8 @@
                 userData.onboardCompleted = true;
                 localStorage.setItem(`paipachi:${username}:onboardingDone`, 'true');
             }
-            if (ensureBetaTesterProfile(username)) {
-                saveRemoteUserProfile().catch(error => console.warn('Beta tester profile save failed', error));
-            }
+            const todayWeight = Number(localStorage.getItem(dailyKey('weight')));
+            if (Number.isFinite(todayWeight) && todayWeight >= 30 && todayWeight <= 250) userData.currentWeight = todayWeight;
             restoreBodyMeasurements(username);
         }
 
@@ -1621,9 +1740,10 @@
                 return;
             }
             currentUser = saved;
+            currentLoginExperience = "returning";
             await loadUserProfile(currentUser);
             document.getElementById('loginOverlay').style.display = "none";
-            if (isOnboardingDone(currentUser)) enterMainApplication();
+            if (isOnboardingDone(currentUser)) enterMainApplication("returning");
             else launchOnboardWorkflow();
         }
 
@@ -4807,25 +4927,25 @@
             let shouldShowNearbyCards = false;
             let answerMode = "analysis";
             let requestedWellnessMode = "";
-            if (/(養胃|溫和|胃不舒服|胃食道|胃酸|火燒心|反酸)/.test(question)) {
+            if (/[養胃溫和胃不舒服]/.test(question)) {
                 requestedWellnessMode = "gentle";
                 setActiveWellnessMode(requestedWellnessMode);
                 answer = `已切換成「溫和養胃」餐食方向。這是日常養身建議，不是疾病治療。這一餐優先選溫熱、柔軟、少油、少辣、少酸：蒸蛋或豆腐＋魚／雞肉＋粥、白飯或地瓜，再配煮軟青菜；先吃七分飽，飲料以溫水為主。${diagnosis.baseline}`;
                 shouldShowRecipeCards = true;
                 answerMode = "recipe";
-            } else if (/(健胃|養身|養生|日常養身|日常養生)/.test(question)) {
+            } else if (/[健胃養身日常養身]/.test(question)) {
                 requestedWellnessMode = "daily";
                 setActiveWellnessMode(requestedWellnessMode);
                 answer = `「日常養身」不是只吃清粥，而是讓三餐規律又有營養。今天用一掌心蛋白質、兩拳蔬菜、半到一拳原型主食，細嚼慢嚥；發酵乳品或豆製品可依自己的耐受度少量加入。${diagnosis.baseline}`;
                 shouldShowRecipeCards = true;
                 answerMode = "recipe";
-            } else if (/(順暢|纖維|便秘|排便)/.test(question)) {
+            } else if (/[順暢纖維便秘排便]/.test(question)) {
                 requestedWellnessMode = "fiber";
                 setActiveWellnessMode(requestedWellnessMode);
                 answer = `已切換成「順暢纖維」方向：這餐安排一份全穀或地瓜、兩拳熟蔬菜、一份水果，再把水分補足。纖維要逐步增加，若一下吃太多反而可能脹氣。今天纖維還差 ${status.fiberGap}g、水還差 ${status.waterGap}ml。`;
                 shouldShowRecipeCards = true;
                 answerMode = "recipe";
-            } else if (/(經期|暖養|月經|生理期)/.test(question)) {
+            } else if (/[經期暖養月經生理期]/.test(question)) {
                 requestedWellnessMode = "period";
                 setActiveWellnessMode(requestedWellnessMode);
                 answer = `已切換成「經期暖養」方向：優先溫熱餐、足量蛋白質及含鐵食物，例如牛肉、魚、蛋、豆腐配深綠色蔬菜；搭配富含維生素 C 的水果。若容易水腫，湯汁與重鹹醬料減量。`;
@@ -5169,6 +5289,8 @@
             const weightInput = document.getElementById('weightDirectInput');
             if (weightInput) weightInput.value = userData.currentWeight.toFixed(1);
             if (currentUser) localStorage.setItem(dailyKey('weight'), userData.currentWeight.toFixed(1));
+            if (currentUser) localStorage.setItem(`paipachi:${currentUser}:lastKnownWeight`, userData.currentWeight.toFixed(1));
+            rememberBodyMeasurements();
             markActive();
             reviveTataTomato();
             updateOtterGrowth();
@@ -5182,6 +5304,8 @@
             userData.currentHeight = Math.max(140, Math.min(220, Math.round(Number(userData.currentHeight || 170) + amount)));
             const heightInput = document.getElementById('heightDirectInput');
             if (heightInput) heightInput.value = userData.currentHeight;
+            if (currentUser) localStorage.setItem(`paipachi:${currentUser}:accountHeight`, String(userData.currentHeight));
+            rememberBodyMeasurements();
             markActive();
             saveToStorage();
             saveRemoteUserProfile();
@@ -5202,6 +5326,8 @@
             }
             userData.currentWeight = Math.round(value * 10) / 10;
             if (currentUser) localStorage.setItem(dailyKey('weight'), userData.currentWeight.toFixed(1));
+            if (currentUser) localStorage.setItem(`paipachi:${currentUser}:lastKnownWeight`, userData.currentWeight.toFixed(1));
+            rememberBodyMeasurements();
             const weightInput = document.getElementById('weightDirectInput');
             const quickInput = document.getElementById('todayWeightQuickInput');
             if (weightInput && document.activeElement !== weightInput) weightInput.value = userData.currentWeight.toFixed(1);
@@ -5229,6 +5355,8 @@
                 return;
             }
             userData.currentHeight = Math.round(value);
+            if (currentUser) localStorage.setItem(`paipachi:${currentUser}:accountHeight`, String(userData.currentHeight));
+            rememberBodyMeasurements();
             markActive();
             saveToStorage();
             saveRemoteUserProfile();

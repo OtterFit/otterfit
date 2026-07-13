@@ -14,7 +14,7 @@
     <link rel="apple-touch-icon" href="./apple-touch-icon.png">
     <link rel="manifest" href="./manifest.webmanifest">
 
-    <link rel="stylesheet" href="./styles.css?v=217">
+    <link rel="stylesheet" href="./styles.css?v=219">
 </head>
 <body>
 
@@ -27,7 +27,8 @@
 
             <div class="login-input-group">
                 <label class="login-label">測試員帳號 (001-010 / Lynn / Leia / Andrew / Sally)</label>
-                <input type="text" id="loginUsername" class="login-input-style" placeholder="輸入 001-010 測試帳號" autocomplete="username">
+                <input type="text" id="loginUsername" class="login-input-style" placeholder="輸入 001-010 測試帳號" autocomplete="username" oninput="previewLoginState()">
+                <div id="loginAccountHint" class="login-account-hint" aria-live="polite">輸入帳號後，塔塔會告訴你是首次設定或繼續使用。</div>
             </div>
 
             <div id="loginErrorMsg" class="login-error-tip">請輸入 1-32 字元的英文、數字、底線或減號帳號。</div>
@@ -135,6 +136,7 @@
             <div id="logoutBtn" class="user-status-tag" onclick="handleLogout()">測試員</div>
         </header>
         <section id="installNudgeCard" class="install-nudge-card" aria-live="polite"></section>
+        <section id="returningWelcomeCard" class="returning-welcome-card" aria-live="polite"></section>
         <section id="dailyCoreCard" class="daily-core-card" aria-label="每日核心操作">
             <div class="daily-core-heading">
                 <div>
@@ -714,6 +716,6 @@
     <!-- ==========================================
        JavaScript 核心控制與「新舊用戶分流」中心
        ========================================== -->
-    <script src="./app.js?v=217"></script>
+    <script src="./app.js?v=219"></script>
 </body>
 </html>
